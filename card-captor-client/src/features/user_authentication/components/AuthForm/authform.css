@@ -1,0 +1,19 @@
+.auth-form{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-block: 1rem;
+    width: 80%;
+}
+
+@media (min-width: 768px) and (max-width: 1024px){
+    .auth-form{
+        width: 40%;
+    }
+}
+
+@media (min-width: 1024px){
+    .auth-form{
+        width: 20%;
+    }
+}

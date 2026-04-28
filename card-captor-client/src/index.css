@@ -1,0 +1,310 @@
+/* ----------------- */
+/* Custom Properties */
+/* ----------------- */
+
+:root{
+    /* colors */
+    /* 
+        white - #EAEBE6
+        light-1 - #F1E0D9
+        light-2 - #DED6C3
+        dark-1 - #BA7275
+        dark-2 - #C4957B 
+    */
+    --clr-dark-1: 358 34% 59%;
+    --clr-dark-2: 21 38% 63%;
+    --clr-light-1: 18 46% 90%;
+    --clr-light-2: 42 29% 82%;
+    --clr-white: 72 11% 91%;
+    --clr-error:0 100% 72%;
+
+    /* font-sizes */
+    --fs-800: 3rem;
+    --fs-700: 3.5rem;
+    --fs-600: 2rem;
+    --fs-500: 1.5rem;
+    --fs-450: 1rem;  
+    --fs-425: 0.95rem;
+    --fs-400: 0.95rem;
+
+    /* font-families */
+    --ff-serif: "Emilys Candy", serif;
+    --ff-sans: "Winky Sans", sans-serif;
+}
+
+@media (min-width:768px) {
+    :root{
+        --fs-800: 5rem;
+        --fs-700: 4rem;
+        --fs-600: 3rem;
+        --fs-500: 2rem;
+        --fs-450: 1.50rem;  
+        --fs-425: 1.25rem;
+        --fs-400: 1rem;
+    }
+
+    
+}
+/* ----------------- */
+/* Reset             */
+/* ----------------- */
+
+*,
+*::before,
+*::after{
+    box-sizing: border-box;
+} 
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p{
+    font-weight: 400;
+}
+
+body,
+p,
+h1,
+h2,
+h3,
+h4,
+h5, 
+picture, 
+figure{
+    margin:0;
+}
+
+body{
+    min-height: 100vh;
+    font-family: var(--ff-sans);
+    font-size: var(--fs-400);
+    color:hsl(var(--clr-dark-1));
+    background-color: hsl(var(--clr-light-2));
+}
+
+img, 
+picture{
+    width: 100%;
+    display:block;
+}
+
+input, 
+button, 
+textarea, 
+select{
+    font:inherit;
+}
+
+ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+a{
+    text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce){
+    *,
+    *::before,
+    *::after{
+        animation-duration: 0.01ms;
+        animation-iteration-count: 1;
+        transition-duration: 0.01ms;
+        scroll-behavior: auto;
+    }
+
+}
+
+/* ----------------- */
+/* Utility Classes   */
+/* ----------------- */
+
+/* General */
+
+.d-none{
+    opacity:0;
+    height: 2px;
+}
+
+.opaque{
+    opacity: 0;
+}
+
+.flex-row{
+    display:flex;
+}
+
+.flex-column{
+    display: flex;
+    flex-direction: column;
+}
+
+.justify-center{
+    justify-content: center;
+}
+
+.justify-space-between{
+    justify-content: space-between;
+}
+
+.align-center{
+    align-items: center;
+}
+
+.grid{
+    display: grid;
+}
+
+.grid-2-col{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.flex-row, .flex-column, .grid-2-col{
+    gap: var(--gap, 0.72rem);
+}
+
+.container-center{
+    border-radius: 1rem;
+    margin: auto;
+    padding: 1rem;
+}
+
+.container{
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.flex-container-center{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.padding-1{
+    padding: 1rem;
+}
+
+.padding-inline-2{
+    padding-inline: 2rem;
+}
+
+.border-
+
+.fixed-top{
+    position: fixed;
+    top:0;
+    left: 0;
+    right: 0;
+}
+
+/* used to describe elements that do not have any text, such as an icon to people using a screen reader */
+.sr-only{
+    position: absolute;
+    width:1px;
+    height: 1px;
+    padding:0;
+    margin:-1px;
+    overflow:hidden;
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Colors */
+.bg-dark-1{ background-color: hsl(var(--clr-dark-1)); }
+.bg-dark-2{ background-color: hsl(var(--clr-dark-2)); }
+.bg-light-1{ background-color: hsl(var(--clr-light-1)); }
+.bg-light-2{ background-color: hsl(var(--clr-light-2)); }
+.bg-white{ background-color: hsl(var(--clr-white)); }
+.bg-error{ background-color: hsl(var(--clr-error)); }
+.bg-trans{ background-color: transparent; }
+
+.text-dark-1{ color: hsl(var(--clr-dark-1)); }
+.text-dark-2{ color: hsl(var(--clr-dark-2)); }
+.text-light-1{ color: hsl(var(--clr-light-1)); }
+.text-light-2{ color: hsl(var(--clr-light-2)); }
+.text-white{ color: hsl(var(--clr-white)); }
+.text-error{ color: hsl(var(--clr-error)); }
+
+/* font-size */
+.fs-400{ font-size: var(--fs-400);}
+.fs-425{ font-size: var(--fs-425);}
+.fs-450{ font-size: var(--fs-450);}
+.fs-500{ font-size: var(--fs-500);}
+.fs-600{ font-size: var(--fs-600);}
+.fs-700{ font-size: var(--fs-700);}
+.fs-800{ font-size: var(--fs-800);}
+
+/* font-family */
+.ff-sans{ font-family: var(--ff-sans); }
+.ff-serif{ font-family: var(--ff-serif); }
+
+/* letter spacing */
+.letter-spacing-1{ letter-spacing: 4.75px; }
+.letter-spacing-2{ letter-spacing: 2.7px; }
+.letter-spacing-3{ letter-spacing: 2.35px; }
+
+.uppercase{ text-transform: uppercase; }
+.titlecase{ text-transform: capitalize;}
+
+.text-center{ text-align: center; }
+
+.border-top-dark-1{
+    border-top: solid 1px hsl(var(--clr-dark-1));
+}
+.border-dark-2{
+    border: solid 1px hsl(var(--clr-dark-2));
+}
+/* ----------------- */
+/* Components        */
+/* ----------------- */
+
+.large-button{
+    padding: 0.7rem;
+    border-radius: 0.5rem;
+    border: 0.5px solid transparent;
+    transition: 0.2s ease-in transform;
+}
+
+.icon-button{
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+}
+
+.large-button:not(:disabled):hover{
+    cursor: pointer;
+}
+
+.large-button:not(:disabled):hover{
+    transform: scale(1.025);
+}
+
+.large-button:focus{
+    transform: scale(1.025);
+    outline: solid 1px hsl(var(--clr-dark-1));
+}
+
+.textbox{
+    background-color: hsl(var(--clr-light-1));
+    color: hsl(var(--clr-dark-1));
+    border-radius: 0.3rem;
+    border: hsl(var(--clr-dark-1)) solid 1px;
+    padding: 0.5rem;
+}
+
+.textbox:focus{
+    outline: hsl(var(--clr-dark-1)) solid 1px;
+}
+
+.textbox::placeholder{
+    color:hsl(var(--clr-dark-1)/50%);
+}

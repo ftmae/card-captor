@@ -1,0 +1,35 @@
+.error-message-container{
+    position: fixed;
+    top: 0.5rem;
+    left: 1rem;
+    right: 1rem;
+    margin-inline: auto;
+    display: flex;
+    justify-content: center;
+}
+.error-message{
+    position: relative;
+    align-self: center;
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    gap: 0.72rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: hsl(var(--clr-error));
+    min-height: 50px;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+    .error-message{
+        width: 30%;
+    }
+}
+.error-message > button {
+    position: absolute;
+    top: 0.2rem;
+    right: 0.2rem;
+    display: flex;
+    align-items: center;
+}

@@ -1,0 +1,42 @@
+.question-types{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    background-color: transparent;
+    border: 1px solid hsl(var(--clr-dark-1));
+    padding-block: 1rem;
+    border-radius: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.question-types > label{
+    display: flex;
+    align-items: center;
+}
+
+input[type="checkbox"] + .checkmark {
+  background-color: hsl(var(--clr-white));
+}
+
+input[type="checkbox"]:checked + .checkmark {
+  background-color: hsl(var(--clr-dark-1) / 20%);
+}
+
+.checkmark {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid hsl(var(--clr-dark-1));
+    height: 15px;
+    width: 15px;
+    border-radius: 0.2rem;
+    margin-right: 0.4rem;
+}
+
+input[type="checkbox"]:checked + .checkmark::after{
+    content: "";   
+    display: block;
+    width: 15px;
+    height: 15px;
+    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 16 16" fill="%23BA7275" xmlns="http://www.w3.org/2000/svg"><path d="M6 10.8L3.2 8l-1.2 1.2L6 13.2l8-8-1.2-1.2z"/></svg>');
+}

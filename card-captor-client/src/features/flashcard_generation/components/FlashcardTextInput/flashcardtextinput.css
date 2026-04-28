@@ -1,0 +1,39 @@
+.custom-textarea-large{
+    background-color: transparent;
+    color: hsl(var(--clr-dark-1));
+    border: 1px solid hsl(var(--clr-dark-1));
+    border-radius: 0.5rem;
+    resize: vertical;
+    min-height: 100px;
+    max-height: 300px;
+    padding: 1rem;
+    width: 100%;
+}
+
+.custom-textarea-large::placeholder{
+    color: hsl(var(--clr-dark-1) / 50%);
+}
+
+.custom-textarea-large:focus{
+    outline: solid 1px hsl(var(--clr-dark-1));
+}
+
+.custom-textarea-large::-webkit-scrollbar{
+    width: 0.2rem;
+}
+
+.custom-textarea-large::-webkit-scrollbar-track{
+    background-color: hsl(var(--clr-light-1));
+    border-radius: 1rem;
+
+}
+
+.custom-textarea-large::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--clr-dark-1) / 70%);
+    border-radius:0.2rem;
+}
+
+.custom-textarea-large{
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--clr-dark-1) / 70%)  hsl(var(--clr-light-1));
+}
