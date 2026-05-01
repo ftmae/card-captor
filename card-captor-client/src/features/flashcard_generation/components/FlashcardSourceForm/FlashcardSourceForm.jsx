@@ -91,7 +91,7 @@ export default function FlashcardSourceForm() {
     return (
         <>
         {error &&  <ErrorMessage error={error} setError={setError}/>}
-        <div style={{marginTop: '3rem'}}>
+        <div className='mt-7'>
             <form onSubmit={handleSubmit} className="upload-form">
                 <h1 className="ff-serif fs-500 text-center">Flashcard Preferences</h1>
                 <RadioButtons selected={selected} setSelected={setSelected} />
@@ -100,7 +100,7 @@ export default function FlashcardSourceForm() {
                 </div>
                 <QuestionTypeCheckbox checkboxes={checkboxes} setCheckboxes={setCheckboxes} />
                 {validation.length > 0 && <ul className="ff-sans text-dark-1 fs-425 text-center">{validation.map((message, index) => <li key={index}>{message}</li>)}</ul>}
-                <button type="submit" className={`large-button  ${isloading ? 'bg-light-1 text-dark-1' : 'bg-dark-1 text-white'}`} disabled = {isloading}>{isloading ? "Generating..." : "Submit"}</button>
+                <button type="submit" className={`small-button  ${isloading ? 'bg-light-1 text-dark-1' : 'bg-dark-1 text-white'}`} disabled = {isloading}>{isloading ? "Generating..." : "Submit"}</button>
             </form>
         </div>
         </>

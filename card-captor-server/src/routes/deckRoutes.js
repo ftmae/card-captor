@@ -40,4 +40,27 @@ router.get('/create', async (req, res)=>{
     }
 });
 
+router.put('/:id', async (req, res)=>{
+    try{
+        const id = parseInt(req.params.id);
+        const name = req.body.name;
+        if(!id || !name) return res.status(400).json({error: "Missing Required Fields"});
+
+        const updatedDeck = await prisma.deck.update({
+            data:{
+                name
+            },
+            where:{
+                id,
+                userId: req.userId,
+            }
+        });
+        console.log(updatedDeck);
+        return res.status(200).json({data: updatedDeck});
+
+    }catch(error){
+        return res.status(500).json({error: error.message});
+    }
+})
+
 export default router;

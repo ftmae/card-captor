@@ -1,0 +1,20 @@
+.card{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 0.2rem;
+    padding: 1rem;
+    margin: auto;
+    background-color: hsl(var(--clr-light-1));
+    color: hsl(var(--clr-dark-2));
+    gap: 1rem;
+    width: 100%;
+}
+
+
+@media (min-height: 768px) {
+    .card{
+        width: 50%;
+    }
+    
+}

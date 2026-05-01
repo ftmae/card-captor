@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import useAppStore from "../../../../store/appStore";
 import { useLoaderData } from "react-router";
 import ErrorMessage from "../../../../shared/components/ErrorMessage/ErrorMessage";
@@ -9,8 +9,13 @@ export default function Flashcards() {
     const [current, setCurrent] = useState(0);
     const [error, setError] = useState(null);
     // const flashcards = useAppStore(state => state.flashcards);
-    const flashcards = useLoaderData();
+    const fetchedData = useLoaderData();
+    const flashcards = fetchedData.data;
     const card = flashcards ? flashcards[current] : null;
+
+    useEffect(()=>{
+        if(fetchedData.error) setError(fetchedData.error);
+    }, [])
 
     function handleFlip() {
         setFlip(prev => prev === 'question' ? 'answer' : 'question')
@@ -34,7 +39,7 @@ export default function Flashcards() {
         <>
             {error && <ErrorMessage error={error} setError={setError}/>}
             
-            <div className="flex-row" style={{minHeight: '90vh'}} >
+            <div className="flex-container-center min-height-100vh">
                 <button 
                     className={`icon-button bg-trans text-dark-1 ${flashcards && current > 0 ? '' : 'opaque' }`}
                     style={{ alignSelf: 'center' }} 
@@ -44,7 +49,7 @@ export default function Flashcards() {
                     <span className="material-symbols-outlined fs-600" >arrow_left</span>
                 </button>
 
-                <div className="flex-row align-center container-center bg-dark-1 text-white" onClick={handleFlip} style={{ minHeight: '20vh' }}>
+                <div className="flex-row align-center container-center padding-2 bg-light-1 text-dark-1 border-dark-2" onClick={handleFlip} >
                     <p className="fs-500">
                         {card ? flip === 'question' ? `Q) ${card.question}` : `A) ${card.answer}` : 'No Flashcards to Show'}
                     </p>

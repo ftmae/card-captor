@@ -1,0 +1,24 @@
+.hero-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    width: 100%;
+    min-height: 100vh
+}
+
+.steps-container{
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .hero-container{
+        width: 60%;
+    }
+    .steps-container{
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

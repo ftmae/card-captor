@@ -1,6 +1,5 @@
-import { createBrowserRouter, RouterProvider, Navigate, redirect, useSearchParams } from 'react-router';
+import { createBrowserRouter, RouterProvider, Navigate, redirect, useSearchParams, useRouteError } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
 import FlashcardSourceForm from './features/flashcard_generation/components/FlashcardSourceForm/FlashcardSourceForm.jsx';
 import Flashcards from './features/flashcard_management/components/Flashcards/Flashcards.jsx';
 import AuthForm from './features/user_authentication/components/AuthForm/AuthForm.jsx';
@@ -11,17 +10,37 @@ import { guardLoader, protectedLoader } from './features/user_authentication/loa
 import { logoutAction } from './features/user_authentication/actions/authActions.js';
 import { flashcardLoader } from './features/flashcard_management/loaders/flashcardLoaders.js';
 import { deckLoader } from './features/deck_management/loaders/deckLoaders.js';
+import Landing from './features/landing/Landing/Landing.jsx';
+
+
+function ErrorBoundary() {
+  let error = useRouteError();
+  console.log(error);
+  return (
+    <div className="flex-container-center min-height-100vh flex-column">
+      <h1 className="fs-600 ff-serif">Something Went Wrong</h1>
+      <p className="fs-450">{error.message}</p>
+    </div>
+  );
+}
 
 const router = createBrowserRouter([
   {
     path: '/',
     loader: guardLoader,
+    element: <Landing />,
+    errorElement: <ErrorBoundary />
+  },
+  {
+    path: '/login',
+    loader: guardLoader,
     element: <AuthForm />,
+    errorElement: <ErrorBoundary />
   },
   {
     element: <MainLayout />,
     loader: protectedLoader,
-    errorElement: <Navigate to="/" />,
+    errorElement: <ErrorBoundary />,
     children: [
       {
         path: '/home',

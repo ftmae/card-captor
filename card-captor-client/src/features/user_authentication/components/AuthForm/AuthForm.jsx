@@ -75,7 +75,7 @@ export default function AuthForm(){
     return(
         <>
             {error && <ErrorMessage error={error} setError={setError}/>}
-            <div className="flex-container-center" style={{flexDirection: "column"}}>
+            <div className="flex-container-center min-height-100vh flex-column">
                 <form onSubmit={handleSubmit} className="auth-form">
                     <h1 className="ff-serif">{authState === 'login' ? 'Login' : 'Register'}</h1>
                     <label htmlFor="username" className="sr-only">Username</label>
@@ -94,13 +94,13 @@ export default function AuthForm(){
                     <input className="textbox" type="password" name="password" id="password" placeholder="******"/>
                     {validations.password && <p>{validations.password}</p>}
 
-                    <button className="large-button bg-dark-1 text-white" type="submit" disabled = {loading}>
+                    <button className="small-button bg-dark-1 text-white" type="submit" disabled = {loading}>
                         {loading ? 'Authenticating...' : authState === 'login' ? 'Login' : 'Register'}
                     </button>
                 </form>
                 <div className="flex-row align-center border-top-dark-1 padding-1">
                     <p>{authState === 'login' ? "Don't Have An Account?" : "Already Have An Account?"}</p>
-                    <button className="large-button bg-dark-1 text-white" disabled = {loading} onClick={toggleAuthState}>{authState === 'login' ? "Sign Up" : "Sign In"}</button>
+                    <button className="small-button bg-dark-1 text-white" disabled = {loading} onClick={toggleAuthState}>{authState === 'login' ? "Sign Up" : "Sign In"}</button>
                 </div>
             </div>
         </>
