@@ -1,17 +1,23 @@
-import { useShallow } from 'zustand/react/shallow';
-import { use, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import authRequest from '../../services/authenticate.js';
 import ErrorMessage from '../../../../shared/components/ErrorMessage/ErrorMessage.jsx';
+import queryClient from '../../../../shared/queryClient.js';
+import { useMutation } from '@tanstack/react-query';
 import './authform.css';
 
 export default function AuthForm(){
     const navigate = useNavigate();
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
     const [validations, setValidations] = useState({});
     const [authState, setAuthState] = useState('login');
-
+    const {mutate: authenticate, isPending, isError, error, reset} = useMutation({
+        mutationFn: authRequest,
+        onSuccess: ()=>{
+            queryClient.invalidateQueries({queryKey:['isAuthenticated']});
+            navigate('/home');
+        }
+    });
+    
     function toggleAuthState(){
         setAuthState(prev=> prev==='login' ? 'register' : 'login');
     }
@@ -51,30 +57,21 @@ export default function AuthForm(){
     async function handleSubmit(event){
         event.preventDefault();
         setValidations({});
-        try{
-            const formData = new FormData(event.target);
-            const username = formData.get('username');
-            const password = formData.get('password');
-            const email = formData.get('email');
-            const errors = authState === 'login' ? validateLogin(username, password) : validateRegister(username, email, password)
-            if(Object.keys(errors).length > 0){
-                setValidations(errors);
-                return;
-            }
-            setLoading(true)
-            const message = authState === 'login' ? await authRequest(authState, username, password) : await authRequest(authState, username, password, email);
-            if(message) navigate('/home');
-        } catch(error){
-            console.log(error);
-            setError(error.message);
-        } finally{
-            setLoading(false);
+        const formData = new FormData(event.target);
+        const username = formData.get('username');
+        const password = formData.get('password');
+        const email = formData.get('email');
+        const errors = authState === 'login' ? validateLogin(username, password) : validateRegister(username, email, password)
+        if(Object.keys(errors).length > 0){
+            setValidations(errors);
+            return;
         }
+        authState === 'login' ? authenticate({authState, username, password}) : authenticate({authState, username, password, email});
     }
 
     return(
         <>
-            {error && <ErrorMessage error={error} setError={setError}/>}
+            {(isError) && <ErrorMessage error={error.message} reset={reset}/>}
             <div className="flex-container-center min-height-100vh flex-column">
                 <form onSubmit={handleSubmit} className="auth-form">
                     <h1 className="ff-serif">{authState === 'login' ? 'Login' : 'Register'}</h1>
@@ -94,13 +91,13 @@ export default function AuthForm(){
                     <input className="textbox" type="password" name="password" id="password" placeholder="******"/>
                     {validations.password && <p>{validations.password}</p>}
 
-                    <button className="small-button bg-dark-1 text-white" type="submit" disabled = {loading}>
-                        {loading ? 'Authenticating...' : authState === 'login' ? 'Login' : 'Register'}
+                    <button className="small-button bg-dark-1 text-white" type="submit" disabled = {isPending}>
+                        {isPending ? 'Authenticating...' : authState === 'login' ? 'Login' : 'Register'}
                     </button>
                 </form>
                 <div className="flex-row align-center border-top-dark-1 padding-1">
                     <p>{authState === 'login' ? "Don't Have An Account?" : "Already Have An Account?"}</p>
-                    <button className="small-button bg-dark-1 text-white" disabled = {loading} onClick={toggleAuthState}>{authState === 'login' ? "Sign Up" : "Sign In"}</button>
+                    <button className="small-button bg-dark-1 text-white" disabled = {isPending} onClick={toggleAuthState}>{authState === 'login' ? "Sign Up" : "Sign In"}</button>
                 </div>
             </div>
         </>

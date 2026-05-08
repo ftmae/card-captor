@@ -1,9 +1,9 @@
-export default async function generateCards(text, questionTypes, deckId){
+export default async function generateCards({finalText, selectedQuestionTypes, deckId}){
     const response = await fetch(`${import.meta.env.VITE_API_URL}/flashcards/generateCards`, {
         credentials: 'include',
         method: 'POST',
         headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({text, questionTypes, deckId})
+        body: JSON.stringify({text: finalText, questionTypes: selectedQuestionTypes, deckId})
     });
 
     if(!response.ok){

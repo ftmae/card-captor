@@ -3,39 +3,36 @@ import prisma from '../prismaClient.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import authMiddleware from '../middleware/authMiddleware.js';
+import asyncErrorWrapper from '../utils/asyncErrorWrapper.js';
+import validateFields from '../utils/validation.js';
+import { RecordAlreadyExistsError, RecordNotFoundError } from '../custom-error-handling/DbError.js';
+import { InvalidFieldError } from '../custom-error-handling/ValidationError.js';
 
 const router = express.Router();
 
-function verifyRequiredFields(req, res, fields) {
-    for (const field in fields){
-        if (!req.body[fields[field]]) return false
-    }
-    return true;
-}
-router.post('/register', async (req, res) => {
-    try {
-        if(!verifyRequiredFields(req, res, ['username', 'password', 'email'])){
-            return res.status(400).json({ "error": "Missing Required Fields" });
-        }
-
+router.post('/register', asyncErrorWrapper(
+    async (req, res) => {
+        
         const { username, password, email } = req.body;
+        validateFields([
+            {value: username, name: "Username", type: "text"},
+            {value: password, name: "Password", type: "text"},
+            {value: email, name: "Email", type: "text"},
+        ]);
         const hashedPassword = await bcrypt.hash(password, 8);
 
         const userExists = await prisma.user.findUnique({
-            where: { 
-                username,
-            }
+            where: { username }
         });
 
-        if (userExists) return res.status(400).json({ error: 'User Already Exists' });
-        
+        if (userExists) throw new RecordAlreadyExistsError(`User - ${user}`);
+
         const emailExists = await prisma.user.findUnique({
-            where: { 
+            where: {
                 email,
             }
         });
-
-        if (emailExists) return res.status(400).json({ error: 'E-Mail is Already Registered' });
+        if (emailExists) throw new RecordAlreadyExistsError(`E-Mail - ${email}`);
 
         const newUser = await prisma.user.create({
             data: {
@@ -45,7 +42,7 @@ router.post('/register', async (req, res) => {
             }
         });
 
-       await prisma.deck.create({
+        await prisma.deck.create({
             data: {
                 name: 'Your First Deck',
                 userId: newUser.id
@@ -60,29 +57,27 @@ router.post('/register', async (req, res) => {
             sameSite: 'Lax'
         });
 
-        return res.status(200).json({ "message": "Authentication Successful" });
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: 'Registration failed. Please try again.' })
+        return res.status(200).json({ message: "Authentication Successful" });
     }
-});
+));
 
-router.post('/login', async (req, res) => {
-    try {
-         if(!verifyRequiredFields(req, res, ['username', 'password'])){
-            return res.status(400).json({ "error": "Missing Required Fields" });
-        }
+router.post('/login', asyncErrorWrapper(
+    async (req, res) => {
         const { username, password } = req.body;
+        validateFields([
+            {value: username, name: "Username", type: "text"},
+            {value: password, name: "Password", type: "text"},
+        ]);
+
         const user = await prisma.user.findUnique({
             where: { username }
         });
 
-        if (!user) return res.status(400).json({ error: 'User Not Found' });
+        if (!user) throw new RecordNotFoundError(`User - ${user}`);
 
         const passwordIsValid = await bcrypt.compare(password, user.password);
 
-        if (!passwordIsValid) return res.status(400).json({ error: 'Invalid Credentials' });
+        if (!passwordIsValid) throw new InvalidFieldError(`Password`);
 
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
         res.cookie("authToken", token, {
@@ -92,30 +87,27 @@ router.post('/login', async (req, res) => {
             sameSite: 'Lax'
         });
 
-        return res.status(200).json({ "message": "Authentication Successful" });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: 'Login failed. Please try again.' })
+        return res.status(200).json({ message: "Authentication Successful" });
     }
-});
+));
 
 
-router.get('/user', authMiddleware, (req, res)=>{
+router.get('/user', authMiddleware, (req, res) => {
     res.status(200).json({
-        authenticated: true, 
+        authenticated: true,
         userId: req.userId,
     })
 })
 
-router.post('/logout', authMiddleware, (req, res)=>{
-    try{
+router.post('/logout', authMiddleware, (req, res) => {
+    try {
         res.clearCookie('authToken');
-        return res.status(200).json({'message': 'Logged Out Successfully', 'authenticated' : false});
+        return res.status(200).json({ message: 'Logged Out Successfully', 'authenticated': false });
     }
-    catch(error){
+    catch (error) {
         console.log(error);
-        return res.status(500).json({'error': 'Logout failed. Please try again.'})
+        return res.status(500).json({ error: 'Logout failed. Please try again.' })
     }
-})
+});
 
 export default router;

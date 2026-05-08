@@ -1,59 +1,70 @@
-import { Link } from 'react-router';
 import { useState } from 'react';
-import { editDeck } from '../../services/deckManagement.js';
+import { editDeck, deleteDeck, duplicateDeck } from '../../services/deckManagement.js';
+import queryClient from '../../../../shared/queryClient.js';
 import ErrorMessage from '../../../../shared/components/ErrorMessage/ErrorMessage.jsx';
-import './deck.css';
+import IconButton from '../../../../shared/components/IconButton/IconButton.jsx';
+import DeckLink from '../DeckLink/DeckLink.jsx';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 export default function Deck({name, id}){
-    const [error, setError] = useState(null);
     const [isEdit, setIsEdit] = useState(false);
     const [updatedName, setUpdatedName] = useState(name);
 
-    function handleDelete(){
-    }
+    useEffect(()=>{
+        if(isEdit){
+            document.addEventListener('keydown', detectEscapePress);
+        }
+    }, [isEdit]);
 
+    function detectEscapePress(event){
+        if(event.key === 'Escape') setIsEdit(false);
+    }
+    
+    const linkElements = [
+        {pathname: '/flashcards', id, title: 'View Cards In Deck', icon: 'folder_eye'},
+        {pathname: '/generate_flashcards', id, title: 'Add Cards To Deck', icon: 'add'} 
+    ];
+    
+    const {mutate: removeDeck, isLoading: isRemoveLoading, isError: isRemoveError, error: removeError, reset: resetRemove } = useMutation({
+        mutationFn: deleteDeck, 
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['decks']})
+    });
+    
+    const {mutate: editName, isLoading: isEditLoading, isError: isEditError, error: editError, reset: resetEdit } = useMutation({
+        mutationFn: editDeck, 
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['decks']})
+    });
+    
+    const {mutate: dupDeck, isLoading: isDuplicateLoading, isError: isDuplicateError, error: duplicateError, reset: resetDuplicate } = useMutation({
+        mutationFn: duplicateDeck, 
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['decks']})
+    }); 
     async function handleEdit(){
-        try{
-            setIsEdit(prev=>!prev);
-            if(isEdit){
-                const updatedDeck = await editDeck(id, updatedName);
-                name = updatedName;
-            }
-        }catch(error){
-            setError(error.message)
+        setIsEdit(prev=>!prev);
+        if(isEdit && updatedName != name){
+            editName({id, updatedName})
         }
     }
     return (
         <>
-            {error &&  <ErrorMessage error={error} setError={setError}/>}
-            <div className='border-dark-2 bg-light-1 container flex-row align-center justify-space-between' style={{width: '100%'}}> 
-                <div className='deck-name-container'>
+            {(isRemoveError) && <ErrorMessage error={removeError.message} reset={resetRemove}/>}
+            {(isEditError) && <ErrorMessage error={editError.message} reset={resetEdit}/> }
+            {(isDuplicateError) && <ErrorMessage error={duplicateError.message} reset={resetDuplicate}/> }
+
+            <div className='border-dark-2-trans50 bg-white container flex-column hover'> 
+                <div className="border-bottom-dark-2-trans50">
                     {isEdit ? 
-                        <input type="text" className="textbox fs-400" value={updatedName} onChange={(event)=>setUpdatedName(event.target.value)}/>:
-                        <p>{updatedName}</p> 
+                        <input type="text" className="textbox fs-450 ff-serif width-100" value={updatedName} onChange={(event)=>setUpdatedName(event.target.value)}/>:
+                        <p className="fs-450 ff-serif mb-1">{name}</p> 
                     }
                 </div>
-                <div className="flex-row align-center">
-                    <button className="icon-button bg-trans" title="Edit Deck" onClick={handleEdit}>
-                        <span className="text-dark-2 fs-400 material-symbols-outlined">
-                            {isEdit ? 'check': 'edit'}
-                        </span>
-                    </button>
-                    <Link to={{pathname: '/flashcards', search: `?deckId=${id}`}} className="icon-button bg-trans" title="View Cards In Deck">
-                        <span className="text-dark-2 fs-400 material-symbols-outlined">
-                            visibility
-                        </span>
-                    </Link>
-                    <Link to={{pathname: '/generate_flashcards', search: `?deckId=${id}`}} className="icon-button bg-trans" title="Add Cards to Deck">
-                        <span className="text-dark-2 fs-400 material-symbols-outlined">
-                            add
-                        </span>
-                    </Link>
-                    <button className="icon-button bg-trans" title="Delete Deck" onClick={handleDelete}>
-                        <span className="text-dark-2 fs-400 material-symbols-outlined">
-                            delete
-                        </span>
-                    </button>
+                <div className="flex-row">
+                    <IconButton title="Edit Deck" onClick={handleEdit} icon={isEdit ? 'check': 'edit_square'} />
+                    <IconButton title="Delete Deck" onClick={()=>removeDeck(id)} icon={'delete'} /> 
+                    <IconButton title="Duplicate Deck" onClick={()=>dupDeck({id, name})} icon={'copy_all'} /> 
+
+                    {linkElements.map(element => <DeckLink key={`${element.id}-${element.pathname}`} pathname={element.pathname} id={element.id} title={element.title} icon={element.icon} name={name}/>)}
                 </div>
             </div>
         </>

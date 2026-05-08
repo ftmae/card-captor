@@ -1,11 +1,23 @@
+import { fetchData } from "../../../shared/fetchData"
+
+const base = 'flashcards';
+
 export async function fetchFlashcards(deckId){
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/flashcards/${deckId}`, {
-        credentials: 'include'
-    });
-    if(!response.ok){
-        const err = await response.json();
-        throw new Error(err.error || `Failed to Fetch Flashcards for Deck - ${deckId}`);
-    }
-    const data = await response.json();
+    const data = await fetchData(`${base}/${deckId}`, "GET", null, "Failed to Fetch Flashcards for Deck" );
     return data.flashcards;
+}
+
+export async function createFlashcard({deckId, question, answer, type}){
+    const data = await fetchData(`${base}/create`, "POST", {deckId, question, answer, type}, "Failed to Create Flashcard");
+    return data;
+}
+
+export async function deleteFlashcard(id){
+    const data = await fetchData(`${base}/${id}`, "DELETE", null, "Failed to Delete Flashcard");
+    return data;
+}
+
+export async function editFlashcard({flashcardId, question, answer, type, deckId}){
+    const data = await fetchData(`${base}/${flashcardId}`, "PUT", {question, answer, type, deckId}, "Failed to Edit Flashcard");
+    return data;
 }

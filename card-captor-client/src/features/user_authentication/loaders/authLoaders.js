@@ -1,27 +1,26 @@
 import { verifyAuth } from '../services/authenticate.js';
 import { redirect } from 'react-router';
+import queryClient from '../../../shared/queryClient.js';
 
+export async function isUserAuthenticated(){
+  const user = await queryClient.fetchQuery({queryKey: ['isAuthenticated'], queryFn: verifyAuth});
+  return user;
+}
 
-// implement try catch here and in catch segregate the errors 
-// if server down - show a custom page that says server down. 
-// if some other error - what to do?
-
-export async function protectedLoader(){
+export async function guardLoader(){
   try{
-    const message = await verifyAuth();
-    const isAuthenticated = message.authenticated;
-    if(!isAuthenticated) return redirect('/login');
-    else return isAuthenticated;
+    const user = await isUserAuthenticated();
+    if(user.authenticated) return redirect('/home');
   }catch(error){
     if(!error.status || error.status >= 500) throw new Error("Server Unavailable. Please try again later.");
   }
 }
 
-export async function guardLoader(){
+export async function protectedLoader(){
   try{
-    const message = await verifyAuth();
-    const isAuthenticated = message.authenticated;
-    if(isAuthenticated) return redirect('/home');
+    const user = await isUserAuthenticated();
+    if(!user.authenticated) return redirect('/login');
+    else return user;
   }catch(error){
     if(!error.status || error.status >= 500) throw new Error("Server Unavailable. Please try again later.");
   }

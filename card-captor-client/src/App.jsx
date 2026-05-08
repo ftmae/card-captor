@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider, Navigate, redirect, useSearchParams, useRouteError } from 'react-router';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import queryClient from './shared/queryClient.js';
 import FlashcardSourceForm from './features/flashcard_generation/components/FlashcardSourceForm/FlashcardSourceForm.jsx';
 import Flashcards from './features/flashcard_management/components/Flashcards/Flashcards.jsx';
 import AuthForm from './features/user_authentication/components/AuthForm/AuthForm.jsx';
@@ -8,8 +9,6 @@ import DeckList from './features/deck_management/components/DeckList/DeckList.js
 import MainLayout from './layout/MainLayout.jsx';
 import { guardLoader, protectedLoader } from './features/user_authentication/loaders/authLoaders.js';
 import { logoutAction } from './features/user_authentication/actions/authActions.js';
-import { flashcardLoader } from './features/flashcard_management/loaders/flashcardLoaders.js';
-import { deckLoader } from './features/deck_management/loaders/deckLoaders.js';
 import Landing from './features/landing/Landing/Landing.jsx';
 
 
@@ -53,12 +52,10 @@ const router = createBrowserRouter([
       { 
         path: '/flashcards',
         element: <Flashcards />,
-        loader: flashcardLoader
       },
       {
         path: '/decks',
         element: <DeckList />,
-        loader: deckLoader
       }
     ]
   },
@@ -68,7 +65,6 @@ const router = createBrowserRouter([
   }
 ]);
 
-const queryClient = new QueryClient();
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>

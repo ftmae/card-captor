@@ -27,7 +27,7 @@ model Deck{
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  user        User      @relation(fields: [userId], references: [id]) 
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade) 
   userId      Int
   flashcards  Flashcard[]     
 }
@@ -39,6 +39,6 @@ model Flashcard{
   type      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  deck      Deck      @relation(fields: [deckId], references: [id])
+  deck      Deck      @relation(fields: [deckId], references: [id], onDelete: Cascade)
   deckId    Int
 }

@@ -6,6 +6,7 @@
     margin-inline: auto;
     display: flex;
     justify-content: center;
+    z-index: 6;
 }
 .error-message{
     position: relative;

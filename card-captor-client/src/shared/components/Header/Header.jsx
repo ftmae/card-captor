@@ -4,10 +4,10 @@ export default function Header(){
     const location = useLocation();
     
     return (
-        <header className="fixed-top bg-dark-1 flex-row align-center justify-space-between padding-1 padding-inline-2" style={{zIndex: '10'}}>
+        <header className="fixed-top bg-dark-1 flex-row align-center justify-space-between padding-1 " style={{zIndex: '4'}}>
            <Link to="/"><span className="fs-450 text-light-1 ff-serif">CardCaptor</span></Link>
             <nav>
-                <ul className="flex-row align-center" style={{'--gap': '3rem'}}>
+                <ul className="flex-row align-center" style={{'--gap': '2rem'}}>
                     {location.pathname !== '/home' &&
                         <>
                             {/* <li>

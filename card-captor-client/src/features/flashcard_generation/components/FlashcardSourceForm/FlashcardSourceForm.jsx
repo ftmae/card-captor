@@ -1,6 +1,7 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
+import { useMutation } from '@tanstack/react-query';
 import RadioButtons from '../RadioButtons/RadioButtons.jsx';
 import FlashcardFileInput from '../FlashcardFileInput/FlashcardFileInput.jsx';
 import FlashcardTextInput from '../FlashcardTextInput/FlashcardTextInput.jsx';
@@ -24,14 +25,13 @@ export default function FlashcardSourceForm() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const deckId = searchParams.get('deckId');
-    const { pages, resetPages, text, setText, flashcards, setFlashcards } = useAppStore(
+    const deckName = searchParams.get('deckName');
+    const { pages, resetPages, text, setText } = useAppStore(
         useShallow(state => ({
             pages: state.pages,
             resetPages: state.resetPages,
             text: state.text,
             setText: state.setText,
-            flashcards: state.flashcards,
-            setFlashcards: state.setFlashcards,
         }))
     );
     const [validation, setValidation] = useState([]);
@@ -39,8 +39,11 @@ export default function FlashcardSourceForm() {
     const [checkboxes, setCheckboxes] = useState(QUESTION_TYPES);
     const [inputFile, setInputFile] = useState();
     const [inputText, setInputText] = useState('');
-    const [isloading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+
+    const {mutate: generateFlashcards, isError, error, isPending, reset } = useMutation({
+        mutationFn: generateCards,
+        onSuccess: () => navigate({pathname: '/flashcards', search: `?deckId=${deckId}&deckName=${deckName}`})
+    });
 
     function validateForm() {
         let errors = [];
@@ -58,51 +61,34 @@ export default function FlashcardSourceForm() {
         setCheckboxes(QUESTION_TYPES);
     }
 
-    async function handleSubmit(event) {
+    async function handleSubmit(event){
         event.preventDefault();
-        setError(null);
         const formErrors = validateForm();
         if (formErrors.length > 0) {
             setValidation(formErrors);
             return;
         }
-        setIsLoading(true);
-        try{
-            const selectedQuestionTypes = checkboxes.filter(checkbox => checkbox.checked).map(checkbox => checkbox.label);
-            const finalText = selected === 'pdf' ? await extractText(inputFile, pages.from, pages.to) : inputText;
-            setText(finalText);
-            const returnedDeckId = await generateCards(finalText, selectedQuestionTypes, deckId);       
-            if(returnedDeckId) {
-                // setFlashcards(generatedFlashcards.data);
-                navigate({pathname: '/flashcards', search: `?deckId=${deckId}`});
-            };
-        }
-        catch(error){
-            console.error(error);
-            if (error === 'TypeError') setError("Network error please check your connection");
-            setError(error?.message || "Something went wrong");
-        }
-        finally{
-            resetFormState();
-            setIsLoading(false);
-        }
+        const selectedQuestionTypes = checkboxes.filter(checkbox => checkbox.checked).map(checkbox => checkbox.label);
+        const finalText = selected === 'pdf' ? await extractText(inputFile, pages.from, pages.to) : inputText;
+        setText(finalText);
+        generateFlashcards({finalText, selectedQuestionTypes, deckId});
     }
 
     return (
         <>
-        {error &&  <ErrorMessage error={error} setError={setError}/>}
-        <div className='mt-7'>
-            <form onSubmit={handleSubmit} className="upload-form">
-                <h1 className="ff-serif fs-500 text-center">Flashcard Preferences</h1>
-                <RadioButtons selected={selected} setSelected={setSelected} />
-                <div className='upload-input'>
-                    {selected === 'pdf' ? <FlashcardFileInput inputFile={inputFile} setInputFile={setInputFile} /> : <FlashcardTextInput inputText={inputText} setInputText={setInputText} />}
-                </div>
-                <QuestionTypeCheckbox checkboxes={checkboxes} setCheckboxes={setCheckboxes} />
-                {validation.length > 0 && <ul className="ff-sans text-dark-1 fs-425 text-center">{validation.map((message, index) => <li key={index}>{message}</li>)}</ul>}
-                <button type="submit" className={`small-button  ${isloading ? 'bg-light-1 text-dark-1' : 'bg-dark-1 text-white'}`} disabled = {isloading}>{isloading ? "Generating..." : "Submit"}</button>
-            </form>
-        </div>
+            {(isError) && <ErrorMessage error={error.message} reset={reset}/>}
+            <div className='mt-7'>
+                <form onSubmit={handleSubmit} className="upload-form">
+                    <h1 className="ff-serif fs-500 text-center">Flashcard Preferences</h1>
+                    <RadioButtons selected={selected} setSelected={setSelected} />
+                    <div className='upload-input'>
+                        {selected === 'pdf' ? <FlashcardFileInput inputFile={inputFile} setInputFile={setInputFile} /> : <FlashcardTextInput inputText={inputText} setInputText={setInputText} />}
+                    </div>
+                    <QuestionTypeCheckbox checkboxes={checkboxes} setCheckboxes={setCheckboxes} />
+                    {validation.length > 0 && <ul className="ff-sans text-dark-1 fs-425 text-center">{validation.map((message, index) => <li key={index}>{message}</li>)}</ul>}
+                    <button type="submit" className={`small-button  ${isPending ? 'bg-light- text-dark-1' : 'bg-dark-1 text-white'}`} disabled = {isPending}>{isPending ? "Generating..." : "Submit"}</button>
+                </form>
+            </div>
         </>
     )
 }
