@@ -1,22 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
-import authRequest from '../../services/authenticate.js';
-import ErrorMessage from '../../../../shared/components/ErrorMessage/ErrorMessage.jsx';
-import queryClient from '../../../../shared/queryClient.js';
-import { useMutation } from '@tanstack/react-query';
+import useAuthenticate from '../../hooks/useAuthenticate.jsx';
 import './authform.css';
 
 export default function AuthForm(){
-    const navigate = useNavigate();
     const [validations, setValidations] = useState({});
     const [authState, setAuthState] = useState('login');
-    const {mutate: authenticate, isPending, isError, error, reset} = useMutation({
-        mutationFn: authRequest,
-        onSuccess: ()=>{
-            queryClient.invalidateQueries({queryKey:['isAuthenticated']});
-            navigate('/home');
-        }
-    });
+    const {mutate: authenticate, isPending, isError, error, reset} = useAuthenticate();
     
     function toggleAuthState(){
         setAuthState(prev=> prev==='login' ? 'register' : 'login');
@@ -70,36 +59,33 @@ export default function AuthForm(){
     }
 
     return(
-        <>
-            {(isError) && <ErrorMessage error={error.message} reset={reset}/>}
-            <div className="flex-container-center min-height-100vh flex-column">
-                <form onSubmit={handleSubmit} className="auth-form">
-                    <h1 className="ff-serif">{authState === 'login' ? 'Login' : 'Register'}</h1>
-                    <label htmlFor="username" className="sr-only">Username</label>
-                    <input className="textbox" type="text" name="username" id="username" placeholder="Username"/>
-                    {validations.username && <p>{validations.username}</p>}
+        <div className="flex-container-center min-height-100vh flex-column">
+            <form onSubmit={handleSubmit} className="auth-form">
+                <h1 className="ff-serif">{authState === 'login' ? 'Login' : 'Register'}</h1>
+                <label htmlFor="username" className="sr-only">Username</label>
+                <input className="textbox" type="text" name="username" id="username" placeholder="Username"/>
+                {validations.username && <p>{validations.username}</p>}
 
-                    { authState === 'register' && 
-                        <>
-                            <label htmlFor="email" className="sr-only">E-Mail</label>
-                            <input className="textbox" type="email" name="email" id="email" placeholder="E-Mail"/>
-                            {validations.email && <p>{validations.email}</p>}
-                        </>
-                    }
+                { authState === 'register' && 
+                    <>
+                        <label htmlFor="email" className="sr-only">E-Mail</label>
+                        <input className="textbox" type="email" name="email" id="email" placeholder="E-Mail"/>
+                        {validations.email && <p>{validations.email}</p>}
+                    </>
+                }
 
-                    <label htmlFor="password" className="sr-only">Password</label>
-                    <input className="textbox" type="password" name="password" id="password" placeholder="******"/>
-                    {validations.password && <p>{validations.password}</p>}
+                <label htmlFor="password" className="sr-only">Password</label>
+                <input className="textbox" type="password" name="password" id="password" placeholder="******"/>
+                {validations.password && <p>{validations.password}</p>}
 
-                    <button className="small-button bg-dark-1 text-white" type="submit" disabled = {isPending}>
-                        {isPending ? 'Authenticating...' : authState === 'login' ? 'Login' : 'Register'}
-                    </button>
-                </form>
-                <div className="flex-row align-center border-top-dark-1 padding-1">
-                    <p>{authState === 'login' ? "Don't Have An Account?" : "Already Have An Account?"}</p>
-                    <button className="small-button bg-dark-1 text-white" disabled = {isPending} onClick={toggleAuthState}>{authState === 'login' ? "Sign Up" : "Sign In"}</button>
-                </div>
+                <button className="small-button bg-dark-1 text-white" type="submit" disabled = {isPending}>
+                    {isPending ? 'Authenticating...' : authState === 'login' ? 'Login' : 'Register'}
+                </button>
+            </form>
+            <div className="flex-row align-center border-top-dark-1 padding-1">
+                <p>{authState === 'login' ? "Don't Have An Account?" : "Already Have An Account?"}</p>
+                <button className="small-button bg-dark-1 text-white" disabled = {isPending} onClick={toggleAuthState}>{authState === 'login' ? "Sign Up" : "Sign In"}</button>
             </div>
-        </>
+        </div>
     )
 }

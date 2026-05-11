@@ -1,15 +1,13 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
-import { useMutation } from '@tanstack/react-query';
 import RadioButtons from '../RadioButtons/RadioButtons.jsx';
 import FlashcardFileInput from '../FlashcardFileInput/FlashcardFileInput.jsx';
 import FlashcardTextInput from '../FlashcardTextInput/FlashcardTextInput.jsx';
 import QuestionTypeCheckbox from '../QuestionTypeCheckbox/QuestionTypeCheckbox.jsx';
-import ErrorMessage from '../../../../shared/components/ErrorMessage/ErrorMessage.jsx';
-import useAppStore from '../../../../store/appStore.js';
-import generateCards from '../../services/gemini.js';
 import extractText from '../../services/extractPdfText.js';
+import { useGenerate } from '../../hooks/useGenerate.jsx';
+import useGenerationFormStore from '../../store/generationFormStore.js';
 import './flashcardsourceform.css';
 
 const QUESTION_TYPES = [
@@ -22,11 +20,10 @@ const QUESTION_TYPES = [
 ]
 
 export default function FlashcardSourceForm() {
-    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const deckId = searchParams.get('deckId');
     const deckName = searchParams.get('deckName');
-    const { pages, resetPages, text, setText } = useAppStore(
+    const { pages, resetPages, text, setText } = useGenerationFormStore(
         useShallow(state => ({
             pages: state.pages,
             resetPages: state.resetPages,
@@ -40,10 +37,7 @@ export default function FlashcardSourceForm() {
     const [inputFile, setInputFile] = useState();
     const [inputText, setInputText] = useState('');
 
-    const {mutate: generateFlashcards, isError, error, isPending, reset } = useMutation({
-        mutationFn: generateCards,
-        onSuccess: () => navigate({pathname: '/flashcards', search: `?deckId=${deckId}&deckName=${deckName}`})
-    });
+    const {mutate: generateFlashcards, isError, error, isPending, reset } = useGenerate(deckId, deckName);
 
     function validateForm() {
         let errors = [];
@@ -76,7 +70,6 @@ export default function FlashcardSourceForm() {
 
     return (
         <>
-            {(isError) && <ErrorMessage error={error.message} reset={reset}/>}
             <div className='mt-7'>
                 <form onSubmit={handleSubmit} className="upload-form">
                     <h1 className="ff-serif fs-500 text-center">Flashcard Preferences</h1>

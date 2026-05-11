@@ -10,7 +10,9 @@ import MainLayout from './layout/MainLayout.jsx';
 import { guardLoader, protectedLoader } from './features/user_authentication/loaders/authLoaders.js';
 import { logoutAction } from './features/user_authentication/actions/authActions.js';
 import Landing from './features/landing/Landing/Landing.jsx';
-
+import DeckSelection from './features/spaced_repetition/components/DeckSelection.jsx';
+import { ToastContainer, Flip } from 'react-toastify';
+import { BadgeCheck, CircleAlert } from 'lucide-react';
 
 function ErrorBoundary() {
   let error = useRouteError();
@@ -56,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: '/decks',
         element: <DeckList />,
+      },
+      {
+        path: '/deck_selection',
+        element: <DeckSelection />,
       }
     ]
   },
@@ -69,6 +75,25 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Flip}
+        icon={({type})=>{
+          switch(type){
+            case 'error': return <CircleAlert className="text-error" />
+            case 'success': return <BadgeCheck className="text-success"/>
+          }
+        }}
+      />
     </QueryClientProvider>
   )
 }

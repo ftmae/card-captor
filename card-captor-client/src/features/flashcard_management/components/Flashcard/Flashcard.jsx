@@ -1,33 +1,15 @@
 import { useState } from "react";
 import IconButton from "../../../../shared/components/IconButton/IconButton";
-import { useMutation } from "@tanstack/react-query";
-import { deleteFlashcard, editFlashcard } from "../../services/flashcardManagement";
 import NewFlashcardForm from "../NewFlashcardForm/NewFlashcardForm";
-import ErrorMessage from "../../../../shared/components/ErrorMessage/ErrorMessage";
-import queryClient from "../../../../shared/queryClient.js";
+import { useDeleteFlashcard, useEditFlashcard } from "../../hooks/useFlashcards.jsx";
 
 export default function Flashcard({question, answer, deckId, flashcardId, type}){
     const [isEdit, setIsEdit] = useState(false);
-    
-    const {mutate: deleteCard, isPending: isDelPending, isError: isDelError, error: delError, reset: resetDel } = useMutation({
-        mutationFn: deleteFlashcard,
-        onSuccess: () => queryClient.invalidateQueries(['flashcards', deckId])
-    });
-
-    const {mutate: editCard, isPending: isEditPending, isError: isEditError, error: editError, reset: resetEdit} = useMutation({
-        mutationFn: editFlashcard,
-        onSuccess: () => {
-            queryClient.invalidateQueries(['flashcards', deckId]);
-            setIsEdit(false);
-        }
-    });
+    const { mutate: deleteCard, isPending: isDelPending } = useDeleteFlashcard(deckId)
+    const { mutate: editCard, isPending: isEditPending } = useEditFlashcard(deckId, setIsEdit);
 
     return (
         <>
-            {(isDelError) && <ErrorMessage error={delError.message} reset={resetDel}/> }
-            {(isEditError) && <ErrorMessage error={editError.message} reset={resetEdit}/> }
-            {(isDelPending || isEditPending) && <div>Loading...</div>}
-
             {isEdit && <NewFlashcardForm 
                 formType="edit" 
                 action={editCard} 

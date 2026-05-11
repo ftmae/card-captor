@@ -3,8 +3,8 @@ import CardLink from '../CardLink/CardLink';
 import './home.css';
 
 const cards = [
-    {title: "Generate Flashcards", body: "Upload lecture notes, textbook chapters or any study material in PDF or text format.", icon: "cards_stack" },
-    {title: "Study With Spaced Repetition", body: "An adaptive learning algorithm that shows the right card at the right time so that all your content is learned thoroughly.", icon: "monitoring"}
+    {title: "Generate Flashcards", body: "Upload lecture notes, textbook chapters or any study material in PDF or text format.", icon: "cards_stack", to: '/decks'},
+    {title: "Study With Spaced Repetition", body: "An adaptive learning algorithm that shows the right card at the right time so that all your content is learned thoroughly.", icon: "monitoring", to: '/deck_selection'}
 ]
 export default function Home(){
     return ( 
@@ -26,7 +26,7 @@ export default function Home(){
                 </div>
             </article>
             <article className="grid-responsive">
-                {cards.map(card => <CardLink title={card.title} body={card.body} icon={card.icon} />)}
+                {cards.map((card, index) => <CardLink key={card.title + index} title={card.title} body={card.body} icon={card.icon} to={card.to}/>)}
             </article>
         </section>
     )

@@ -1,0 +1,11 @@
+.decklist-header{
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+}
+
+@media (min-width: 768px) {
+    .decklist-header > button{
+        justify-self: end;
+    }
+}

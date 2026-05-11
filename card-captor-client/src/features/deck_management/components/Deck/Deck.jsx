@@ -1,57 +1,40 @@
 import { useState } from 'react';
-import { editDeck, deleteDeck, duplicateDeck } from '../../services/deckManagement.js';
-import queryClient from '../../../../shared/queryClient.js';
-import ErrorMessage from '../../../../shared/components/ErrorMessage/ErrorMessage.jsx';
 import IconButton from '../../../../shared/components/IconButton/IconButton.jsx';
 import DeckLink from '../DeckLink/DeckLink.jsx';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { useDeleteDeck, useDupDeck, useEditDeck } from '../../hooks/useDecks.jsx';
 
 export default function Deck({name, id}){
     const [isEdit, setIsEdit] = useState(false);
     const [updatedName, setUpdatedName] = useState(name);
 
     useEffect(()=>{
+        function detectEscapePress(event){
+            if(event.key === 'Escape') setIsEdit(false);
+        }
         if(isEdit){
             document.addEventListener('keydown', detectEscapePress);
         }
     }, [isEdit]);
 
-    function detectEscapePress(event){
-        if(event.key === 'Escape') setIsEdit(false);
-    }
-    
     const linkElements = [
         {pathname: '/flashcards', id, title: 'View Cards In Deck', icon: 'folder_eye'},
         {pathname: '/generate_flashcards', id, title: 'Add Cards To Deck', icon: 'add'} 
     ];
-    
-    const {mutate: removeDeck, isLoading: isRemoveLoading, isError: isRemoveError, error: removeError, reset: resetRemove } = useMutation({
-        mutationFn: deleteDeck, 
-        onSuccess: () => queryClient.invalidateQueries({queryKey: ['decks']})
-    });
-    
-    const {mutate: editName, isLoading: isEditLoading, isError: isEditError, error: editError, reset: resetEdit } = useMutation({
-        mutationFn: editDeck, 
-        onSuccess: () => queryClient.invalidateQueries({queryKey: ['decks']})
-    });
-    
-    const {mutate: dupDeck, isLoading: isDuplicateLoading, isError: isDuplicateError, error: duplicateError, reset: resetDuplicate } = useMutation({
-        mutationFn: duplicateDeck, 
-        onSuccess: () => queryClient.invalidateQueries({queryKey: ['decks']})
-    }); 
+
     async function handleEdit(){
         setIsEdit(prev=>!prev);
         if(isEdit && updatedName != name){
             editName({id, updatedName})
         }
     }
+    const {mutate: removeDeck, isPending: isRemovePending} = useDeleteDeck();
+    const {mutate: editName, isPending: isEditPending} = useEditDeck();
+    const {mutate: dupDeck, isPending: isDuplicatePending} = useDupDeck();
+  
+    
     return (
         <>
-            {(isRemoveError) && <ErrorMessage error={removeError.message} reset={resetRemove}/>}
-            {(isEditError) && <ErrorMessage error={editError.message} reset={resetEdit}/> }
-            {(isDuplicateError) && <ErrorMessage error={duplicateError.message} reset={resetDuplicate}/> }
-
             <div className='border-dark-2-trans50 bg-white container flex-column hover'> 
                 <div className="border-bottom-dark-2-trans50">
                     {isEdit ? 

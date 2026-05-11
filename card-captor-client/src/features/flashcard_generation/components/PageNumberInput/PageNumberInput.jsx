@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import useAppStore from '../../../../store/appStore';
+import useGenerationFormStore from '../../store/generationFormStore.js';
 import './pagenumberinput.css';
 
 
 export default function PageNumberInput({totalPages}) {
-    const {pages, setPages, incrementPages, decrementPages} = useAppStore(
+    const {pages, setPages, incrementPages, decrementPages} = useGenerationFormStore(
         useShallow(state=>(
             {
                 pages: state.pages,
@@ -67,10 +67,10 @@ export default function PageNumberInput({totalPages}) {
                     <div className='input-container'>
                         <input className="number-input" type="number" value={numberInput.value} onChange={numberInput.handleChange} min={numberInput.min} max={totalPages}/>
                         <div className="button-row">
-                            <button type="button" className="icon-button bg-dark-1 text-white" onClick={handleUp}>
+                            <button type="button" className="icon-button bg-dark-1 text-white border-none" onClick={handleUp}>
                                 <span id={numberInput.id} className="material-symbols-outlined">arrow_drop_up</span>
                             </button>
-                            <button type="button" className="icon-button bg-dark-1 text-white" onClick={handleDown}>
+                            <button type="button" className="icon-button bg-dark-1 text-white border-none" onClick={handleDown}>
                                 <span id={numberInput.id} className="material-symbols-outlined">arrow_drop_down</span>
                             </button>
                         </div>
