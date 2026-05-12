@@ -8,6 +8,7 @@ import QuestionTypeCheckbox from '../QuestionTypeCheckbox/QuestionTypeCheckbox.j
 import extractText from '../../services/extractPdfText.js';
 import { useGenerate } from '../../hooks/useGenerate.jsx';
 import useGenerationFormStore from '../../store/generationFormStore.js';
+import { toast } from 'react-toastify';
 import './flashcardsourceform.css';
 
 const QUESTION_TYPES = [
@@ -63,7 +64,18 @@ export default function FlashcardSourceForm() {
             return;
         }
         const selectedQuestionTypes = checkboxes.filter(checkbox => checkbox.checked).map(checkbox => checkbox.label);
-        const finalText = selected === 'pdf' ? await extractText(inputFile, pages.from, pages.to) : inputText;
+        let finalText;
+        if(selected === 'pdf'){
+            const extractedText = await extractText(inputFile, pages.from, pages.to );
+            if(!extractedText){
+                toast.info("Scanned PDFs aren't yet supported. Try again with a digital PDF");
+                return;
+            }
+            finalText = extractedText;
+        }
+        else{
+            finalText = inputText
+        }
         setText(finalText);
         generateFlashcards({finalText, selectedQuestionTypes, deckId});
     }

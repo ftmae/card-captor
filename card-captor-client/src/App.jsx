@@ -12,7 +12,8 @@ import { logoutAction } from './features/user_authentication/actions/authActions
 import Landing from './features/landing/Landing/Landing.jsx';
 import DeckSelection from './features/spaced_repetition/components/DeckSelection.jsx';
 import { ToastContainer, Flip } from 'react-toastify';
-import { BadgeCheck, CircleAlert } from 'lucide-react';
+import { BadgeCheck, CircleAlert, BadgeInfo } from 'lucide-react';
+import NotFound from './layout/NotFound.jsx';
 
 function ErrorBoundary() {
   let error = useRouteError();
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
   {
     path: '/logout',
     action: logoutAction,
+  },
+  {
+    path: "*",
+    element: <NotFound />
   }
 ]);
 
@@ -89,8 +94,9 @@ export default function App() {
         transition={Flip}
         icon={({type})=>{
           switch(type){
-            case 'error': return <CircleAlert className="text-error" />
-            case 'success': return <BadgeCheck className="text-success"/>
+            case 'error': return <CircleAlert className="text-error-dark" />
+            case 'success': return <BadgeCheck className="text-success-dark"/>
+            case 'info': return <BadgeInfo className="text-info-dark"/>
           }
         }}
       />

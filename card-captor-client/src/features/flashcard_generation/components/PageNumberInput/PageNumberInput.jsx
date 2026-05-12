@@ -17,8 +17,8 @@ export default function PageNumberInput({totalPages}) {
     );
     
     const numberInputs = [
-        {id: 'from', value: pages.from, min: 1, handleChange: handleFromChange},
-        {id: 'to', value: pages.to, min: pages.from, handleChange: handleToChange},
+        {id: 'from', value: pages.from, min: 1, handleChange: handleFromChange, handleBlur: handleFromBlur},
+        {id: 'to', value: pages.to, min: pages.from, handleChange: handleToChange, handleBlur: handleToBlur},
     ]
 
     useEffect(() => {
@@ -27,16 +27,37 @@ export default function PageNumberInput({totalPages}) {
 
     function handleFromChange(event) {
         const value = parseInt(event.target.value);
-        if (value >= 1 && value <= totalPages && value <= pages.to) {
-            setPages('from', value);
-        }
+        setPages('from', value);
     }
 
     function handleToChange(event) {
         const value = parseInt(event.target.value);
-        if (value <= totalPages && value >= pages.from) {
-            setPages('to', value);
+        setPages('to', value);
+        
+    }
+
+    function handleFromBlur(event){
+        let value = pages.from;
+
+        if(Number.isNaN(value) || value === '' || value < 1){
+           value = 1; 
         }
+        if(value > totalPages){
+            value = totalPages;
+        }
+        if(value > pages.to){
+            value = pages.to;
+        }
+        setPages('from', value);
+    }
+
+    function handleToBlur(){
+        let value = pages.to;
+        
+        if(Number.isNaN(value) || value === '' || value < 1 || value < pages.from || value > totalPages){
+            value = totalPages;
+        }
+        setPages('to', value);
     }
 
     function handleUp(event){ 
@@ -65,7 +86,7 @@ export default function PageNumberInput({totalPages}) {
                 <label key={numberInput.id} htmlFor={numberInput.id} className="flex-row align-center" style={{ flex: 1 }}>
                     <span className='titlecase'>{numberInput.id}</span>
                     <div className='input-container'>
-                        <input className="number-input" type="number" value={numberInput.value} onChange={numberInput.handleChange} min={numberInput.min} max={totalPages}/>
+                        <input className="number-input" type="number" value={numberInput.value} onChange={numberInput.handleChange}  onBlur={numberInput.handleBlur} min={numberInput.min} max={totalPages}/>
                         <div className="button-row">
                             <button type="button" className="icon-button bg-dark-1 text-white border-none" onClick={handleUp}>
                                 <span id={numberInput.id} className="material-symbols-outlined">arrow_drop_up</span>

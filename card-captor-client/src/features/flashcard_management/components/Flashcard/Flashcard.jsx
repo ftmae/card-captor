@@ -24,8 +24,8 @@ export default function Flashcard({question, answer, deckId, flashcardId, type})
                 <div className="flex-row justify-space-between">
                     <p>{type}</p>
                     <div className="flex-row">
-                        <IconButton title="Delete Flashcard" onClick={()=>deleteCard(flashcardId)} icon={'delete'}/>
-                        <IconButton title="Edit Flashcard" onClick={()=>setIsEdit(true)} icon={isEdit ? 'check': 'edit_square'}/>
+                        <IconButton title="Delete Flashcard" onClick={()=>deleteCard(flashcardId)} icon={'delete'} disabled={isDelPending || isEditPending } />
+                        <IconButton title="Edit Flashcard" onClick={()=>setIsEdit(true)} icon={isEdit ? 'check': 'edit_square'} disabled={isDelPending || isEditPending } />
                     </div>
                 </div>
                 <div className="grid-responsive">

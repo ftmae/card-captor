@@ -2,9 +2,10 @@ import { ApiError } from "@google/genai";
 import { Prisma } from "../../generated/prisma/client.ts";
 import { InvalidFieldError, MissingFieldError } from "../custom-error-handling/ValidationError.js";
 import { RecordAlreadyExistsError, RecordNotFoundError } from "../custom-error-handling/DbError.js";
+import logger from '../logger/logger.js';
 
 export default function errorMiddleware(err, req, res, next){
-    console.log(err);
+    logger.error(err);
 
     if(err instanceof SyntaxError){
         return res.status(400).json({error: "Could Not Parse as JSON"});
@@ -54,6 +55,6 @@ export default function errorMiddleware(err, req, res, next){
             return res.status(404).json({error: "Database Request Error"});
         }
     }
-    
+    // if(err.instanceof PayloadTooLargeError)
     return res.status(500).json({error: "An Unexpected Error Occurred. Operation Failed"});
 }

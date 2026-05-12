@@ -23,7 +23,7 @@ export default function Flashcards() {
                 <div className="flex-row justify-space-between align-center width-responsive mb-05">
                     <h1 className="ff-serif fs-500 ">{deckName}</h1> 
                     <div className="flex-row">
-                        <button className="small-button bg-dark-1 text-white flex-row align-center" onClick={()=> setCreate(prev=>!prev)}>
+                        <button className="small-button bg-dark-1 text-white flex-row align-center" onClick={()=> setCreate(prev=>!prev)} disabled={isQueryLoading || isAddPending}>
                             <span className="fs-400 material-symbols-outlined">
                                 add
                             </span>
@@ -33,7 +33,7 @@ export default function Flashcards() {
                 </div>
                 <div className="width-responsive">
                     {flashcards?.length > 0 && types.map(type=>(
-                        <TypeButton text={type} onClick={()=> setCurrent(type)} current={current}/>
+                        <TypeButton key={type} text={type} onClick={()=> setCurrent(type)} current={current}/>
                     ))}
                 </div>
 

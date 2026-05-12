@@ -12,7 +12,7 @@ export function isValidString(str){
 
 export default function validateFields(fields){
     fields.forEach(field=>{
-        const message = `${field.name} - ${field.value}`
+        const message = `${field.name}`
         if(!field.value) throw new MissingFieldError(message);
         if(field.type === 'id'){
             if(!isValidId(field.value)) throw new InvalidFieldError(message);

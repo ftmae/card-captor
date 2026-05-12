@@ -4,6 +4,8 @@
     gap: 0.5rem;
     padding-block: 1rem;
     width: 80%;
+    opacity: 0;
+    animation: appear 0.5s ease-in forwards;
 }
 
 @media (min-width: 768px) and (max-width: 1024px){
@@ -15,5 +17,14 @@
 @media (min-width: 1024px){
     .auth-form{
         width: 20%;
+    }
+}
+
+@keyframes appear {
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
     }
 }
