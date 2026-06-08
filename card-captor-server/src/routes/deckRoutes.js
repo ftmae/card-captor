@@ -23,15 +23,16 @@ router.get('/', asyncErrorWrapper(
 router.post('/create', asyncErrorWrapper(
     async (req, res)=>{
         const userId = Number.parseInt(req.userId);
-        validateFields([{value: userId, name: "User ID", type: "id"}]);
-
-        const decks = await prisma.deck.findMany({
-            where: { userId }
-        });
+        const name = req.body.deckName;
+        
+        validateFields([
+            {value: userId, name: "User ID", type: "id"},
+            {value: name, name: "Deck Name", type: "text"}
+        ]);
 
         const newDeck = await prisma.deck.create({
             data:{
-                name: `New Deck - ${decks.length+1}`,
+                name,
                 userId
             }
         });
@@ -87,6 +88,28 @@ router.put('/:id', asyncErrorWrapper(
         return res.status(200).json({data: updatedDeck});
     }
 ))
+
+router.post('/editStatus', asyncErrorWrapper(
+    async(req, res) =>{
+        const decks = req.body.decks;
+        const status = req.body.status;
+        const userId = Number.parseInt(req.userId);
+        
+        validateFields([
+            {value: userId, name: "User ID", type: "id"}, 
+            {value: status, name: "Deck Status", type: "boolean"}, 
+            {value: decks, name: "List of Decks", type: "array"}
+        ]);
+
+        decks.forEach(async deck=>{
+            await prisma.deck.update({
+                data: { isStudying: status },
+                where: { id: deck, userId }
+            })
+        })
+        return res.status(200).json({data: "All Good"});
+    }
+));
 
 router.delete('/:id', asyncErrorWrapper(
     async (req, res)=>{

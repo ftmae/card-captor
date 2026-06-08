@@ -1,11 +1,6 @@
 import './radiobuttons.css';
 
-const options = [
-    {key: '1-radio-text', id: 'text', label:'Text', value: 'text'},
-    {key: '2-radio-pdf', id: 'pdf', label:'PDF', value: 'pdf'},
-];
-
-export default function RadioButtons({selected, setSelected}){
+export default function RadioButtons({selected, setSelected, options}){
     const radioButtons = options.map(option=>(
         <label key={option.key} htmlFor={option.id}>  
             <input 

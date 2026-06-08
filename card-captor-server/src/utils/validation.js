@@ -13,12 +13,15 @@ export function isValidString(str){
 export default function validateFields(fields){
     fields.forEach(field=>{
         const message = `${field.name}`
-        if(!field.value) throw new MissingFieldError(message);
+        if(field.value === null || field.value === undefined) throw new MissingFieldError(message);
         if(field.type === 'id'){
             if(!isValidId(field.value)) throw new InvalidFieldError(message);
         }
         if(field.type === 'text'){
             if(!isValidString(field.value)) throw new InvalidFieldError(message);
+        }
+        if(field.type === "array"){
+            if(field.value.length === 0) throw new InvalidFieldError(message)
         }
     });
 }

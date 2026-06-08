@@ -1,7 +1,7 @@
-export default function IconButton({title, onClick, icon, disabled}){
+export default function IconButton({id, title, onClick, icon, disabled, buttonStyle, spanStyle}){
     return(
-        <button className="icon-button flex-row align-center border-dark-2 bg-light-1" title={title} onClick={onClick} disabled={disabled}>
-            <span className="material-symbols-outlined text-dark-2">
+        <button type="button" className={`icon-button ${buttonStyle}`} title={title} onClick={onClick} disabled={disabled}>
+            <span className={`material-symbols-outlined ${spanStyle}`}>
                 {icon}
             </span>
         </button>

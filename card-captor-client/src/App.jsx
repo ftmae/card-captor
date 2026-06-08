@@ -3,7 +3,6 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import queryClient from './shared/queryClient.js';
 import FlashcardSourceForm from './features/flashcard_generation/components/FlashcardSourceForm/FlashcardSourceForm.jsx';
 import Flashcards from './features/flashcard_management/components/Flashcards/Flashcards.jsx';
-import AuthForm from './features/user_authentication/components/AuthForm/AuthForm.jsx';
 import Home from './features/home/Home/Home.jsx';
 import DeckList from './features/deck_management/components/DeckList/DeckList.jsx';
 import MainLayout from './layout/MainLayout.jsx';
@@ -14,6 +13,11 @@ import DeckSelection from './features/spaced_repetition/components/DeckSelection
 import { ToastContainer, Flip } from 'react-toastify';
 import { BadgeCheck, CircleAlert, BadgeInfo } from 'lucide-react';
 import NotFound from './layout/NotFound.jsx';
+import StudyCards from './features/spaced_repetition/components/StudyCards.jsx';
+import UpdateUserDetails from './features/user_authentication/components/UpdateUserDetails.jsx';
+import PasswordForm from './features/user_authentication/components/PasswordForm.jsx';
+import LoginForm from './features/user_authentication/components/LoginForm.jsx';
+import RegisterForm from './features/user_authentication/components/RegisterForm.jsx';
 
 function ErrorBoundary() {
   let error = useRouteError();
@@ -36,11 +40,30 @@ const router = createBrowserRouter([
   {
     path: '/login',
     loader: guardLoader,
-    element: <AuthForm />,
+    element: <LoginForm />,
+    errorElement: <ErrorBoundary />
+  },
+  {
+    path: '/register',
+    loader: guardLoader,
+    element: <RegisterForm />,
+    errorElement: <ErrorBoundary />
+  },
+  {
+    path: '/forgotPassword',
+    loader: guardLoader,
+    element: <PasswordForm type="forgot" />,
+    errorElement: <ErrorBoundary />
+  },
+  {
+    path: '/resetPassword',
+    loader: guardLoader,
+    element: <PasswordForm type="reset" />,
     errorElement: <ErrorBoundary />
   },
   {
     element: <MainLayout />,
+    id: 'root-protected',
     loader: protectedLoader,
     errorElement: <ErrorBoundary />,
     children: [
@@ -63,6 +86,14 @@ const router = createBrowserRouter([
       {
         path: '/deck_selection',
         element: <DeckSelection />,
+      },
+      {
+        path: '/study',
+        element: <StudyCards />,
+      },
+      {
+        path: '/manage_account',
+        element: <UpdateUserDetails />,
       }
     ]
   },

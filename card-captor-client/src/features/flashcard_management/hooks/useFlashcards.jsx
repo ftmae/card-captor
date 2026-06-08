@@ -12,10 +12,10 @@ function onError(message){
     toast.error(message)
 }
 
-export function useFlashcards(deckId){
+export function useFlashcards(deckIds){
     return useQuery({
-        queryKey: ['flashcards', deckId],
-        queryFn: ()=> fetchFlashcards(deckId)
+        queryKey: ['flashcards', deckIds],
+        queryFn: ()=> fetchFlashcards(deckIds)
     });
 }
 

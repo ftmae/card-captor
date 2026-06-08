@@ -4,7 +4,6 @@ import queryClient from '../../../shared/queryClient.js';
 
 export async function logoutAction(){
     await logoutRequest();
-    queryClient.invalidateQueries({queryKey: ['isAuthenticated']});
+    queryClient.clear();
     return redirect('/');
-
 }

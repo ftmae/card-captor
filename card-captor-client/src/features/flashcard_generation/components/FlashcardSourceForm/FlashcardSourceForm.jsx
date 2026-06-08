@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useShallow } from 'zustand/react/shallow';
-import RadioButtons from '../RadioButtons/RadioButtons.jsx';
+import RadioButtons from '../../../../shared/components/RadioButtons/RadioButtons.jsx';
 import FlashcardFileInput from '../FlashcardFileInput/FlashcardFileInput.jsx';
 import FlashcardTextInput from '../FlashcardTextInput/FlashcardTextInput.jsx';
 import QuestionTypeCheckbox from '../QuestionTypeCheckbox/QuestionTypeCheckbox.jsx';
@@ -19,6 +19,11 @@ const QUESTION_TYPES = [
     { value: "assertion-reason", label: 'Assertion / Reason', checked: false },
     { value: "true-false", label: 'True / False', checked: false },
 ]
+
+const options = [
+    {key: '1-radio-text', id: 'text', label:'Text', value: 'text'},
+    {key: '2-radio-pdf', id: 'pdf', label:'PDF', value: 'pdf'},
+];
 
 export default function FlashcardSourceForm() {
     const [searchParams] = useSearchParams();
@@ -85,13 +90,13 @@ export default function FlashcardSourceForm() {
             <div className='mt-7'>
                 <form onSubmit={handleSubmit} className="upload-form">
                     <h1 className="ff-serif fs-500 text-center">Flashcard Preferences</h1>
-                    <RadioButtons selected={selected} setSelected={setSelected} />
+                    <RadioButtons selected={selected} setSelected={setSelected} options={options} />
                     <div className='upload-input'>
                         {selected === 'pdf' ? <FlashcardFileInput inputFile={inputFile} setInputFile={setInputFile} /> : <FlashcardTextInput inputText={inputText} setInputText={setInputText} />}
                     </div>
                     <QuestionTypeCheckbox checkboxes={checkboxes} setCheckboxes={setCheckboxes} />
                     {validation.length > 0 && <ul className="ff-sans text-dark-1 fs-425 text-center">{validation.map((message, index) => <li key={index}>{message}</li>)}</ul>}
-                    <button type="submit" className={`small-button  ${isPending ? 'bg-light- text-dark-1' : 'bg-dark-1 text-white'}`} disabled = {isPending}>{isPending ? "Generating..." : "Submit"}</button>
+                    <button type="submit" className={`small-button  ${isPending ? 'bg-light-3 text-dark-1 border-dark-2' : 'bg-dark-1 text-white border-trans'}`} disabled = {isPending}>{isPending ? "Generating..." : "Submit"}</button>
                 </form>
             </div>
         </>

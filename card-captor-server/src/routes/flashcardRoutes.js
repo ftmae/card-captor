@@ -4,6 +4,7 @@ import generateCards from '../services/ai.js';
 import asyncErrorWrapper from '../utils/asyncErrorWrapper.js';
 import validateFields from '../utils/validation.js';
 import { RecordNotFoundError } from '../custom-error-handling/DbError.js';
+import { createEmptyCard } from 'ts-fsrs';
 
 const router = express.Router();
 
@@ -27,25 +28,32 @@ router.post('/generateCards', asyncErrorWrapper(
 
         const parsed = JSON.parse(flashcards);
 
-        await prisma.flashcard.createManyAndReturn({
-            data: parsed.map(flashcard=>({...flashcard, deckId}))
+        await prisma.flashcard.createMany({
+            data: parsed.map(flashcard=>({...flashcard, deckId, fsrsData: createEmptyCard()}))
         });
 
         res.status(200).json({data: deckId});
     }
 ));
 
-router.get('/:id', asyncErrorWrapper(
+router.get('/', asyncErrorWrapper(
     async(req, res)=>{
-        const deckId = parseInt(req.params.id);
-        validateFields([{value: deckId, name: "Deck ID", type: "id"}]);
-        
-        const deck = await prisma.deck.findFirst({ where: {id: deckId} });
-        if(!deck) throw new RecordNotFoundError(`Deck - ${deckId}`);
+        let deckIds = req.query.deckId;
+        if(typeof deckIds === 'string'){
+            deckIds = [deckIds];
+        }
+        deckIds = deckIds.map(deckId => Number.parseInt(deckId));
 
-        const flashcards = await prisma.flashcard.findMany({
-            where:{ deckId }
-        });
+        let flashcards = [];
+        for (const deckId of deckIds){
+            validateFields([{value: deckId, name: "Deck ID", type: "id"}]);
+            const deck = await prisma.deck.findFirst({ where: {id: deckId} });
+            if(!deck) throw new RecordNotFoundError(`Deck - ${deckId}`);
+            const deckFlashcards = await prisma.flashcard.findMany({
+                where:{ deckId }
+            });
+            flashcards.push(...deckFlashcards);
+        }
         return res.status(200).json({flashcards});
     }
 ));
@@ -66,7 +74,7 @@ router.post('/create', asyncErrorWrapper(
         if(!deck) throw new RecordNotFoundError(`Deck - ${deckId}`);
 
         const flashcard = await prisma.flashcard.create({
-            data: { deckId, question, answer, type }
+            data: { deckId, question, answer, type, fsrsData: createEmptyCard()}
         });
         return res.status(201).json({flashcard});
     }

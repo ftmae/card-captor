@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { createDeck, deleteDeck, duplicateDeck, editDeck, fetchDecks } from '../services/deckManagement.js';
+import { createDeck, deleteDeck, duplicateDeck, fetchDecks } from '../services/deckManagement.js';
 import queryClient from "../../../shared/queryClient.js";
 import { toast } from 'react-toastify';
 
@@ -20,18 +20,21 @@ export function useDecks(){
     });
 }
 
-export function useAddDeck(){
+export function useAddDeck(setAdd){
     return useMutation({
-        mutationFn: createDeck,
-        onSuccess: ()=> onSuccess('Added'),
+        mutationFn: (deckName)=> createDeck(deckName),
+        onSuccess: ()=> {
+            onSuccess('Added');
+            setAdd(false);
+        },
         onError: (error)=> onError(error.message),
     })
 }
 
-export function useEditDeck(){
+export function useEditDeck(editFn){
     return useMutation({
-        mutationFn: editDeck,
-        onSuccess: ()=> onSuccess('Edited'),
+        mutationFn: editFn,
+        onSuccess: ()=>  onSuccess('Updated'),
         onError: (error)=> onError(error.message),
     });
 }

@@ -2,8 +2,10 @@ import { fetchData } from "../../../shared/fetchData"
 
 const base = 'flashcards';
 
-export async function fetchFlashcards(deckId){
-    const data = await fetchData(`${base}/${deckId}`, "GET", null, "Failed to Fetch Flashcards for Deck" );
+export async function fetchFlashcards(deckIds){
+    const params = new URLSearchParams();
+    deckIds.forEach(deckId => params.append("deckId", deckId));
+    const data = await fetchData(`${base}?${params.toString()}`, "GET", null, "Failed to Fetch Flashcards for Deck" );
     return data.flashcards;
 }
 

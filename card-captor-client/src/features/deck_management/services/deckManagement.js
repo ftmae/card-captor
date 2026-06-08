@@ -6,8 +6,8 @@ export async function fetchDecks(){
     return data.decks;
 }
 
-export async function createDeck(){
-    const data = await fetchData(`${base}/create`, "POST", null, "Failed to Create Deck");
+export async function createDeck(deckName){
+    const data = await fetchData(`${base}/create`, "POST", {deckName}, "Failed to Create Deck");
     return data;
 }
 
@@ -23,4 +23,10 @@ export async function deleteDeck(deckId) {
 export async function duplicateDeck({id, name}){
     console.log(name);
     const data = await fetchData(`${base}/duplicate/${id}`, "POST", {name}, "Failed to Duplicate Deck");
+}
+
+export async function editDeckStatus({checkedDecks: decks, status}){
+    decks = [...decks];
+    const data = await fetchData(`${base}/editStatus`, "POST", {decks, status}, "Failed to Change Deck Status");
+    return data;
 }

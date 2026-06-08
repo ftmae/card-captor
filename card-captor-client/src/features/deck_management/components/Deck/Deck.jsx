@@ -2,36 +2,20 @@ import { useState } from 'react';
 import IconButton from '../../../../shared/components/IconButton/IconButton.jsx';
 import DeckLink from '../DeckLink/DeckLink.jsx';
 import { useEffect } from 'react';
-import { useDeleteDeck, useDupDeck, useEditDeck } from '../../hooks/useDecks.jsx';
+import { useDeleteDeck, useDupDeck } from '../../hooks/useDecks.jsx';
+import { editDeck } from '../../services/deckManagement.js';
+import useInlineDeckEdit from '../../hooks/useInlineDeckEdit.jsx';
 
 export default function Deck({name, id}){
-    const [isEdit, setIsEdit] = useState(false);
-    const [updatedName, setUpdatedName] = useState(name);
-
-    useEffect(()=>{
-        function detectEscapePress(event){
-            if(event.key === 'Escape') setIsEdit(false);
-        }
-        if(isEdit){
-            document.addEventListener('keydown', detectEscapePress);
-        }
-    }, [isEdit]);
-
     const linkElements = [
         {pathname: '/flashcards', id, title: 'View Cards In Deck', icon: 'folder_eye'},
         {pathname: '/generate_flashcards', id, title: 'Add Cards To Deck', icon: 'add'} 
     ];
 
-    async function handleEdit(){
-        setIsEdit(prev=>!prev);
-        if(isEdit && updatedName != name){
-            editName({id, updatedName})
-        }
-    }
     const {mutate: removeDeck, isPending: isRemovePending} = useDeleteDeck();
-    const {mutate: editName, isPending: isEditPending} = useEditDeck();
     const {mutate: dupDeck, isPending: isDuplicatePending} = useDupDeck();
-  
+
+    const [isEdit, setIsEdit, updatedName, setUpdatedName, handleEdit, isEditPending] = useInlineDeckEdit(name, id);
     
     return (
         <>
@@ -43,11 +27,9 @@ export default function Deck({name, id}){
                     }
                 </div>
                 <div className="flex-row">
-                    <IconButton title="Edit Deck" onClick={handleEdit} icon={isEdit ? 'check': 'edit_square'} disabled={isRemovePending || isDuplicatePending || isEditPending}/>
-                    <IconButton title="Delete Deck" onClick={()=>removeDeck(id)} icon={'delete'} disabled={isRemovePending || isDuplicatePending || isEditPending}/> 
-                    <IconButton title="Duplicate Deck" onClick={()=>dupDeck({id, name})} icon={'copy_all'} disabled={isRemovePending || isDuplicatePending || isEditPending}/> 
-
-                    {linkElements.map(element => <DeckLink key={`${element.id}-${element.pathname}`} pathname={element.pathname} id={element.id} title={element.title} icon={element.icon} name={name}/>)}
+                    <IconButton title="Edit Deck" onClick={handleEdit} icon={isEdit ? 'check': 'edit_square'} disabled={isRemovePending || isDuplicatePending || isEditPending} buttonStyle={"flex-row align-center border-dark-2 bg-light-1"} spanStyle="text-dark-2"/>
+                    <IconButton title="Delete Deck" onClick={()=>removeDeck(id)} icon={'delete'} disabled={isRemovePending || isDuplicatePending || isEditPending} buttonStyle={"flex-row align-center border-dark-2 bg-light-1"} spanStyle="text-dark-2"/> 
+                    <DeckLink key="view_flashcards" pathname="/flashcards" title="View Cards In Deck" icon="folder_eye" name={name} id={id}/>
                 </div>
             </div>
         </>

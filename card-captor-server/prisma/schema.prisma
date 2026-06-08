@@ -13,11 +13,13 @@ datasource db {
 }
 
 model User{
-  id        Int       @id @default(autoincrement())
-  username  String    @unique
-  email     String    @unique
-  password  String  
-  createdAt DateTime  @default(now())
+  id                          Int       @id @default(autoincrement())
+  username                    String    @unique
+  email                       String    @unique
+  password                    String  
+  createdAt                   DateTime  @default(now())
+  resetPasswordToken          String?
+  resetPasswordTokenAt        DateTime?
   decks     Deck[]
 }
 
@@ -27,9 +29,10 @@ model Deck{
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  isStudying  Boolean   @default(false)
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade) 
   userId      Int
-  flashcards  Flashcard[]     
+  flashcards  Flashcard[]    
 }
 
 model Flashcard{
@@ -39,6 +42,7 @@ model Flashcard{
   type      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  fsrsData  Json?
   deck      Deck      @relation(fields: [deckId], references: [id], onDelete: Cascade)
   deckId    Int
 }
