@@ -1,16 +1,9 @@
-# React + Vite
+# Card Captor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An AI powered study buddy that generates flashcards of different formats from PDF uploads or text input. 
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Built With 
+1. Frontend - React.js with React Router, Tanstack Query and React Toastify
+2. Backend - Node.js with Express, Prisma ORM and Winston
+3. Database - PostgreSQL
+4. AI/LLM - Gemini via API Key
