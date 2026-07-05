@@ -1,0 +1,29 @@
+.header-menu{
+    position: fixed;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    background-color: hsl(var(--clr-dark-1));
+    gap: 1rem;
+    z-index: 5;
+    transition: transform 450ms ease-out;
+    transform: translateX(100%);
+}
+
+.header-menu > ul{
+    margin-top: 7rem;
+    min-height: 100vh;
+    width: 50vw;
+    padding: 1rem 2rem;
+}
+
+.header-menu.opened{
+    transform: translateX(0%);
+}
+
+nav > button, nav > form > button{
+    position: relative;
+    z-index: 10;
+}

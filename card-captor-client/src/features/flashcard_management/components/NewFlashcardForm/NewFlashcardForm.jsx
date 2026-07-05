@@ -19,7 +19,7 @@ export default function NewFlashcardForm({formType, action, setModalState, id, d
     }
 
     return (
-        <section className="full-screen fixed-top flex-container-center bg-white-trans" style={{zIndex: 5}}>
+        <section className="full-screen fixed-top flex-container-center bg-white-trans z-index-5">
             <form onSubmit={handleSubmit} className="container bg-white flex-column padding-2 width-responsive" >
                 <h1 className="ff-serif">{formType === "add" ? 'New' : 'Edit'} Flashcard</h1>
                 <div className="grid-responsive">
@@ -30,8 +30,8 @@ export default function NewFlashcardForm({formType, action, setModalState, id, d
                     {QUESTION_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
                 </select>
                 <div className="flex-row">
-                    <button type="submit" className="small-button bg-dark-1 text-white titlecase border-trans" style={{width: '100%'}}>{formType}</button>
-                    <button type="button" className="small-button bg-light-1 text-dark-2 border-dark-2" style={{width: '100%'}} onClick={()=>setModalState(false)}>Cancel</button>
+                    <button type="submit" className="small-button bg-dark-1 text-white titlecase border-trans width-100">{formType}</button>
+                    <button type="button" className="small-button bg-light-1 text-dark-2 border-dark-2 width-100" onClick={()=>setModalState(false)}>Cancel</button>
                 </div>
             </form>
         </section>

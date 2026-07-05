@@ -1,11 +1,13 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-    host: 'sandbox.smtp.mailtrap.io',
-    port: '2525',
+    host: "smtp.gmail.com",
     auth: {
-        user: '2d564ec551e2ce',
-        pass: '2edbac7a3b6bf5',
+        type: "OAuth2",
+        user: 'moaiyadi.fatemaabbas@gmail.com',
+        clientId: process.env.GMAIL_CLIENT_ID,
+        clientSecret: process.env.GMAIL_CLIENT_SECRET,
+        refreshToken: process.env.GMAIL_REFRESH_TOKEN,
     }
 });
 

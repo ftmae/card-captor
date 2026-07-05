@@ -15,13 +15,13 @@ import { BadgeCheck, CircleAlert, BadgeInfo } from 'lucide-react';
 import NotFound from './layout/NotFound.jsx';
 import StudyCards from './features/spaced_repetition/components/StudyCards.jsx';
 import UpdateUserDetails from './features/user_authentication/components/UpdateUserDetails.jsx';
-import PasswordForm from './features/user_authentication/components/PasswordForm.jsx';
 import LoginForm from './features/user_authentication/components/LoginForm.jsx';
 import RegisterForm from './features/user_authentication/components/RegisterForm.jsx';
+import ForgotPasswordForm from './features/user_authentication/components/ForgotPasswordForm.jsx';
+import ResetPasswordForm from './features/user_authentication/components/ResetPasswordForm.jsx';
 
 function ErrorBoundary() {
   let error = useRouteError();
-  console.log(error);
   return (
     <div className="flex-container-center min-height-100vh flex-column">
       <h1 className="fs-600 ff-serif">Something Went Wrong</h1>
@@ -52,13 +52,13 @@ const router = createBrowserRouter([
   {
     path: '/forgotPassword',
     loader: guardLoader,
-    element: <PasswordForm type="forgot" />,
+    element: <ForgotPasswordForm />,
     errorElement: <ErrorBoundary />
   },
   {
     path: '/resetPassword',
     loader: guardLoader,
-    element: <PasswordForm type="reset" />,
+    element: <ResetPasswordForm />,
     errorElement: <ErrorBoundary />
   },
   {

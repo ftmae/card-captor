@@ -69,7 +69,7 @@ export default function AuthForm(){
                         {validations.email && <p>{validations.email}</p>}
                     </>
                 }
-                <FormInput type="password" value="password"  placeholder="******"/>
+                <FormInput type="password" value="password"  placeholder="Password"/>
                 {validations.password && <p>{validations.password}</p>}
 
                 <button className="small-button bg-dark-1 text-white border-trans" type="submit" disabled = {isPending}>

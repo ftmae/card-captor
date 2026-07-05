@@ -84,7 +84,7 @@ export default function PageNumberInput({ totalPages }) {
     return (
         <div className="flex-row justify-center">
             {numberInputs.map(numberInput => (
-                <label key={numberInput.id} htmlFor={numberInput.id} className="flex-row align-center" style={{ flex: 1 }}>
+                <label key={numberInput.id} htmlFor={numberInput.id} className="flex-row align-center flex-1">
                     <span className='titlecase'>{numberInput.id}</span>
                     <div className='input-container'>
                         <input className="number-input" type="number" value={numberInput.value} onChange={numberInput.handleChange} onBlur={numberInput.handleBlur} min={numberInput.min} max={totalPages} />

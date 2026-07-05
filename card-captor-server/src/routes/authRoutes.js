@@ -183,7 +183,7 @@ router.post('/forgotPassword', asyncErrorWrapper(
         ]);
 
         const user = await prisma.user.findUnique({ where: { email } });
-        if(!user) throw new RecordNotFoundError('Cannot Find  User');
+        if(!user) return res.status(200).json({message: "If your email is registered you will receive a mail shortly"});
         const token = await generateRandomToken();
         const tokenHash = hashToken(token);
         const tokenExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
@@ -194,7 +194,7 @@ router.post('/forgotPassword', asyncErrorWrapper(
 
         const url = `${process.env.FRONTEND_URL}/resetPassword?token=${token}&email=${email}`;
         await transporter.sendMail({
-            from: '"Fatema from Card Captor" <noreply@cardcaptor.com>' ,
+            from: '"Card Captor" <moaiyadi.fatemaabbas@gmail.com>' ,
             to: email,
             subject: "Password Reset URL",
             text: `To reset your password, please click on the following link: ${url}`,
@@ -204,7 +204,7 @@ router.post('/forgotPassword', asyncErrorWrapper(
                 <a href="${url}">Reset Password</a>
             `
         });
-        return res.status(200).json({message: "Mail Sent Successfully"});
+        return res.status(200).json({message: "If your email is registered you will receive a mail shortly"});
     }
 ));
 

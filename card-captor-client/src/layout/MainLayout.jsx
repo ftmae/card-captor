@@ -9,7 +9,7 @@ export default function MainLayout(){
     return (
         <div className='flex-column min-height-100vh'>
             <Header user={user}/>
-            <main style={{flexGrow: 1}}>
+            <main className='flex-grow-1'>
                 <Outlet />
             </main>
             <Footer />

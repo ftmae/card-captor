@@ -14,6 +14,7 @@ export default function StudyCards(){
     let progressBarWidth = 0;
     
     if(flashcards?.length > 0) progressBarWidth = ((current+1)/(flashcards.length) * 100);
+    console.log(flashcards);
     
     return (
         <>

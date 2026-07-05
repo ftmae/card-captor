@@ -39,7 +39,7 @@ export function useUpdateUser(){
         onSuccess: async ()=> {
             await logoutRequest();
             queryClient.clear();
-            navigate('/');
+            navigate('/login');
         },
         onError: (error)=> onError(error)
     })

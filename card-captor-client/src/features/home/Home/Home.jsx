@@ -9,7 +9,7 @@ const cards = [
 export default function Home(){
     return ( 
         <section className="flex-column mt-5 padding-2">
-            <article className="grid-responsive" style={{minHeight: '60vh'}}>
+            <article className="grid-responsive min-height-60vh">
                 <div className='flex-column text-dark-1 justify-center align-center container'>
                     <h1 className="ff-serif text-center fs-600 mb-1">Master All Your Study Material</h1>
                     <p className='fs-450 text-center text-dark-2 ff-sans fw-350'>Upload a PDF or text to get started. If you already have decks created, start studying them with the spaced-repitition module</p>

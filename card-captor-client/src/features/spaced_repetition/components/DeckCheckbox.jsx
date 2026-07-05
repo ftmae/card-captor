@@ -10,7 +10,7 @@ export default function DeckCheckbox({name, id, isChecked, handleOnChange, selec
 
     return (
         <div className={`border-dark-2-trans50 bg-white container justify-space-between hover ${type==="add" ? 'flex-row' : 'flex-column'}`}> 
-            <label key={id} htmlFor={id} className="flex-row align-center" style={{"gap": '0.2rem'}}>
+            <label key={id} htmlFor={id} className="flex-row align-center gap-02">
                 {selected && 
                     <>
                         <input className="d-none" type="checkbox" name="deck" checked={isChecked} value={id} id={id} onChange={handleOnChange}/>

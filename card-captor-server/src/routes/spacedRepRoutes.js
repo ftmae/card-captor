@@ -25,17 +25,6 @@ router.get('/', asyncErrorWrapper(
         }
         deckIds = deckIds.map(id => Number.parseInt(id));
         validateFields(deckIds.map(deckId=> ({value: deckId, type: 'id', name: "Deck ID"})));
-        
-        await prisma.flashcard.updateMany({
-            where:{
-                deckId: {in: deckIds},
-                fsrsData: {equals: prisma.DbNull}
-            },
-            data: {
-                fsrsData: createEmptyCard()
-            }
-        });
-        
         const flashcards = await prisma.flashcard.findMany({
             where:{
                 deckId: {in: deckIds},

@@ -30,7 +30,7 @@ export default function Landing(){
                     <button className="fs-425 large-button bg-dark-1 text-white border-trans" onClick={showHowItWorks}>How It Works</button>
                 </div>
             </section>
-            <section ref={ howItWorksSection } className="appear flex-column" style={{gap: '2rem', margin: '3rem'}}>
+            <section ref={ howItWorksSection } className="appear flex-column gap-2 m3">
                 <h2 className="ff-sans fw-150 text-white text-center uppercase">Three Steps To Mastery</h2>
                 <div className="steps-container">
                     {steps.map(step => <Step key={step.stepNum} stepNum={step.stepNum} heading={step.heading} body={step.body} />)}

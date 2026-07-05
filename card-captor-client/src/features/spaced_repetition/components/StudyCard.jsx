@@ -29,7 +29,7 @@ export default function StudyCard({flashcards, current, setCurrent, side, setSid
                 defaultType={flashcards[current].type} 
                 deckId={flashcards[current].deckId}/>}
             
-            <div className="container bg-white border-dark-2-trans50 text-dark-2 flex-column justify-space-between" style={{gap: '2rem', minHeight: '350px', minWidth: '50%'}}>
+            <div className="container bg-white border-dark-2-trans50 text-dark-2 flex-column justify-space-between gap-2 min-width-50 min-height-350px">
                 <div className="flex-row justify-space-between">
                     <p className="text-dark-2-trans50 fs-425 ff-serif bg-light-3 align-self-start padding-03 border-radius-05">{side === 'question' ? flashcards[current].type : 'Answer'}</p>
                     <div className="flex-row">
