@@ -8,8 +8,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon ./src/server.js",
-    "start": "node ./src/server.js",
-    "build": "prisma generate && prisma migrate deploy",
+    "start": "npx prisma migrate deploy && node ./src/server.js",
+    "build": "npx prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
