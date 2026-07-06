@@ -10,9 +10,9 @@ export function useGenerate(deckId, deckName){
     return useMutation({
         mutationFn: generateCards,
         onSuccess: ()=>{
-            toast.success('Flashcards Generated Successfully');
-            navigate({pathname: '/flashcards', search: `?deckId=${deckId}&deckName=${deckName}`});
             queryClient.invalidateQueries({queryKey: ['flashcards', deckId]});
+            navigate({pathname: '/flashcards', search: `?deckId=${deckId}&deckName=${deckName}`});
+            toast.success('Flashcards Generated Successfully');
         },
         onError: (error)=> toast.error(error.message)
     })
