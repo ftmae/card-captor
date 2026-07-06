@@ -12,6 +12,7 @@ import transporter from '../utils/email.js';
 import dayjs from 'dayjs';
 
 const router = express.Router();
+const isProduction = process.env.NODE_ENV === 'production';
 
 router.post('/register', asyncErrorWrapper(
     async (req, res) => {
@@ -57,8 +58,8 @@ router.post('/register', asyncErrorWrapper(
         res.cookie("authToken", token, {
             maxAge: 24 * 60 * 60 * 1000,
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'none'
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'Lax'
         });
 
         return res.status(200).json({ message: "Authentication Successful" });
@@ -86,13 +87,13 @@ router.post('/login', asyncErrorWrapper(
         const passwordIsValid = await bcrypt.compare(password, user.password);
 
         if (!passwordIsValid) throw new InvalidFieldError(`Password`);
-
+        
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
         res.cookie("authToken", token, {
             maxAge: 24 * 60 * 60 * 1000,
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'none'
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'Lax'
         });
 
         return res.status(200).json({ message: "Authentication Successful" });
@@ -165,7 +166,12 @@ router.put('/user', authMiddleware, asyncErrorWrapper(
 
 router.post('/logout', authMiddleware, (req, res) => {
     try {
-        res.clearCookie('authToken');
+        res.clearCookie('authToken', {
+            maxAge: 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'Lax'
+        });
         return res.status(200).json({ message: 'Logged Out Successfully', 'authenticated': false });
     }
     catch (error) {
