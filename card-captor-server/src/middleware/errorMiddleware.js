@@ -12,7 +12,7 @@ export default function errorMiddleware(err, req, res, next){
     }
 
     if(err instanceof ApiError){
-        if(err.status === 429){
+        if(err.status === 429 || err.status === 503){
             return res.status(429).json({error: "AI Model Currently Unavailable. Please try again after some time."});
         }
         if(err.status === 400){
