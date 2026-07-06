@@ -110,7 +110,15 @@ const router = createBrowserRouter([
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <RouterProvider 
+        router={router} 
+        fallbackElement={
+          <section className="min-height-100vh flex-container-center flex-column opacity-0 appear">
+            <h1 className="ff-serif fs-700">Waking Up Server</h1>
+            <p className="ff-sans fs-450">Please wait for a few seconds</p>
+          </section>
+        }
+        />
       <ToastContainer
         position="top-center"
         autoClose={5000}

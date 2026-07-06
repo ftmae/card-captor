@@ -161,6 +161,10 @@ a{
     width: 1px;
 }
 
+.opacity-0{
+    opacity: 0;
+}
+
 /* flex */
 .flex-row, .flex-column{ display: flex; }
 .flex-column{ flex-direction: column; }
@@ -535,4 +539,22 @@ input[type="checkbox"]:checked + .checkmark::after{
     width: 15px;
     height: 15px;
     background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 16 16" fill="%23BA7275" xmlns="http://www.w3.org/2000/svg"><path d="M6 10.8L3.2 8l-1.2 1.2L6 13.2l8-8-1.2-1.2z"/></svg>');
+}
+
+
+/* ----------------- */
+/* Animations        */
+/* ----------------- */
+
+.appear{
+    animation: appear 0.5s ease-in forwards;
+}
+
+@keyframes appear {
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
 }
