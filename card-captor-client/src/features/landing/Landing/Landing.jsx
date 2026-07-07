@@ -9,7 +9,6 @@ export default function Landing(){
     const howItWorksSection = useRef(null);
     const userAuth = queryClient.getQueryData(['isAuthenticated']);
     const isAuthenticated = userAuth?.authenticated;
-    console.log(userAuth);
     const steps = [
         {stepNum: 1, heading: 'Upload A PDF or Text', body: 'Upload lecture notes, textbook chapters or any study material.'},
         {stepNum: 2, heading: 'Select Flaschcard Format', body: 'Choose from a variety of question answer types - tailored to how you think.'},
