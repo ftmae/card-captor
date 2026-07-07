@@ -27,8 +27,8 @@ export default function NavList({flexStyle, toggleIcon}){
                     <Link className="fs-400 text-light-1" to="/manage_account">
                         {
                             toggleIcon ?
-                            <span class="material-symbols-outlined flex-row align-center">
-                                    person
+                            <span className="material-symbols-outlined flex-row align-center">
+                                person
                             </span> 
                             :
                             'Manage Account'

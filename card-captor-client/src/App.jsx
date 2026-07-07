@@ -30,42 +30,57 @@ function ErrorBoundary() {
   );
 }
 
+function ServerWakeUpFallback(){
+  return(
+    <section className="min-height-100vh flex-container-center flex-column opacity-0 appear">
+      <h1 className="ff-serif fs-700">Waking Up Server</h1>
+      <p className="ff-sans fs-450">Please wait for a few seconds</p>
+    </section>
+  )
+}
+
 const router = createBrowserRouter([
   {
     path: '/',
-    loader: guardLoader,
     element: <Landing />,
-    errorElement: <ErrorBoundary />
+    errorElement: <ErrorBoundary />,
+    hydrateFallbackElement: <ServerWakeUpFallback />
   },
   {
     path: '/login',
     loader: guardLoader,
     element: <LoginForm />,
-    errorElement: <ErrorBoundary />
+    errorElement: <ErrorBoundary />,
+    hydrateFallbackElement: <ServerWakeUpFallback />
   },
   {
     path: '/register',
     loader: guardLoader,
     element: <RegisterForm />,
-    errorElement: <ErrorBoundary />
+    errorElement: <ErrorBoundary />,
+    hydrateFallbackElement: <ServerWakeUpFallback />
+
   },
   {
     path: '/forgotPassword',
     loader: guardLoader,
     element: <ForgotPasswordForm />,
-    errorElement: <ErrorBoundary />
+    errorElement: <ErrorBoundary />,
+    hydrateFallbackElement: <ServerWakeUpFallback />
   },
   {
     path: '/resetPassword',
     loader: guardLoader,
     element: <ResetPasswordForm />,
-    errorElement: <ErrorBoundary />
+    errorElement: <ErrorBoundary />,
+    hydrateFallbackElement: <ServerWakeUpFallback />
   },
   {
     element: <MainLayout />,
     id: 'root-protected',
     loader: protectedLoader,
     errorElement: <ErrorBoundary />,
+    hydrateFallbackElement: <ServerWakeUpFallback />,
     children: [
       {
         path: '/home',
@@ -110,15 +125,7 @@ const router = createBrowserRouter([
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider 
-        router={router} 
-        fallbackElement={
-          <section className="min-height-100vh flex-container-center flex-column opacity-0 appear">
-            <h1 className="ff-serif fs-700">Waking Up Server</h1>
-            <p className="ff-sans fs-450">Please wait for a few seconds</p>
-          </section>
-        }
-        />
+      <RouterProvider router={router} />
       <ToastContainer
         position="top-center"
         autoClose={5000}
