@@ -17,7 +17,10 @@ export async function editDeck({id, updatedName}){
 }
 
 export async function deleteDeck(deckId) {
-    const data = await fetchData(`${base}/${deckId}`, "DELETE", null, "Failed to Delete Deck");
+    const searchParams = new URLSearchParams();
+    deckId.forEach(deckId => searchParams.append('ids', deckId));
+    const url = `${base}?${searchParams.toString()}`
+    const data = await fetchData(url, "DELETE", null, "Failed to Delete Deck");
 }
 
 export async function duplicateDeck({id, name}){

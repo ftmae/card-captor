@@ -1,11 +1,20 @@
-.decklist-header{
-    display: grid;
+.decklist-header {
+    display: flex;
     gap: 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.decklist-header>input {
+    flex-basis: 90%;
 }
 
 @media (min-width: 768px) {
-    .decklist-header > button{
-        justify-self: end;
+    .decklist-header {
+        justify-content: space-between;
+    }
+    
+    .decklist-header>input {
+        flex-basis: 30%;
     }
 }

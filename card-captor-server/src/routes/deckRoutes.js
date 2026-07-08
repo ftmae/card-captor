@@ -41,33 +41,6 @@ router.post('/create', asyncErrorWrapper(
     }
 ));
 
-// router.post('/duplicate/:id', asyncErrorWrapper(
-//     async(req, res)=>{
-//         const deckId = Number.parseInt(req.params.id);
-//         const name = req.body.name;
-//         const userId = Number.parseInt(req.userId);
-//         validateFields([
-//             {value: deckId, name: "Deck ID", type: "id"}, 
-//             {value: name, name: "Deck Name", type: "text"},
-//             {value: userId, name: "User ID", type: "id"}
-//         ]);
-//         // first fetch all records from existing deck ID 
-//         const flashcards = await prisma.flashcard.findMany({ where: { deckId }});
-//         const newDeck = await prisma.deck.create({
-//             data:{
-//                 name: name + "- Duplicate",
-//                 userId
-//             }
-//         });
-//         console.log(newDeck.id);
-//         await prisma.flashcard.createManyAndReturn({
-//             data: flashcards.map(flashcard=>({...flashcard, deckId: newDeck.id}))
-//         });        
-//         console.log(newDeck);
-//         return res.status(200).json({message: "Deck Duplicated Successfully"});
-//     }
-// ));
-
 router.put('/:id', asyncErrorWrapper(
     async (req, res)=>{
         const id = Number.parseInt(req.params.id);
@@ -111,21 +84,27 @@ router.post('/editStatus', asyncErrorWrapper(
     }
 ));
 
-router.delete('/:id', asyncErrorWrapper(
+router.delete('/', asyncErrorWrapper(
     async (req, res)=>{
-        const id = Number.parseInt(req.params.id);
+        let rawIds = req.query.ids;
+        console.log(rawIds);
+        if(!rawIds) throw new MissingFieldError('Deck ID');
+        if(typeof rawIds === 'string'){
+            rawIds = [rawIds];
+        }
         const userId = Number.parseInt(req.userId);
+        const parsedIds = rawIds.map(id => Number.parseInt(id));
+        validateFields([{value: userId, name: "User ID", type: "id"}]);
 
-        validateFields([{value: userId, name: "User ID", type: "id"}, {value: id, name: "Deck ID", type: "id"}]);
+        const existingDecks = await prisma.deck.findMany({ where: {id: {in: parsedIds}, userId} });
+        if(!existingDecks) throw new RecordNotFoundError(`Decks - ${parsedIds.join(', ')}`);
 
-        const deck = await prisma.deck.findFirst({ where: {id, userId} });
-        if(!deck) throw new RecordNotFoundError(`Deck - ${id}`);
-        await prisma.deck.delete({
-            where:{
-                id,
+        await prisma.deck.deleteMany({
+            where: {
+                id: {in: parsedIds},
                 userId,
             }
-        });
+        })
         return res.status(200).json({message: "Deck Deleted Successfully"});
     }
 ));

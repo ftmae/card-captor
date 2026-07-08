@@ -8,7 +8,7 @@ import useInlineDeckEdit from '../../../deck_management/hooks/useInlineDeckEdit.
 import IconButton from "../../../../shared/components/IconButton/IconButton.jsx";
 import { Link } from "react-router";
 import queryClient from "../../../../shared/queryClient.js";
-import EditDeckName from "../../../../shared/components/EditDeckName.jsx";
+import EditDeckName from "../../../../shared/components/EditDeckName/EditDeckName.jsx";
 
 export default function Flashcards() {
     const [searchParams, setSearchParams] = useSearchParams();

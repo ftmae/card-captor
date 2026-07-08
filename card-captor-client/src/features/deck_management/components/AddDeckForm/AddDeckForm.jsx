@@ -1,4 +1,4 @@
-import { useAddDeck } from "../hooks/useDecks.jsx";
+import { useAddDeck } from "../../hooks/useDecks";
 
 export default function AddDeckForm({setAdd}){
     const {mutate: addDeck, isPending: isMutatePending} = useAddDeck(setAdd);

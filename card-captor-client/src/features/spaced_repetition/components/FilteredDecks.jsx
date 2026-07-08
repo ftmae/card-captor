@@ -1,4 +1,5 @@
 import DeckCheckbox from './DeckCheckbox.jsx';
+import IconTextButton from '../../../shared/components/IconTextButton/IconTextButton.jsx';
 import { editDeckStatus } from '../../deck_management/services/deckManagement.js';
 import { useEditDeck } from '../../deck_management/hooks/useDecks.jsx';
 import { useState } from 'react';
@@ -9,7 +10,7 @@ export default function FilteredDecks({ heading, filteredDecks, buttonIcon, butt
     const [selected, setSelected] = useState(false);
     const navigate = useNavigate();
 
-    function handleClick(event){
+    function handleDone(event){
         setSelected(false);
         if(type==="add"){
             editStatus({checkedDecks, status: true});
@@ -34,19 +35,21 @@ export default function FilteredDecks({ heading, filteredDecks, buttonIcon, butt
             <div className='flex-row justify-space-between'>
                 <h1 className="fs-500 ff-serif">{heading}</h1>
                 <div className="flex-row">
-                    <button className={`small-button flex-row align-center ${selected ? "bg-light-3 text-dark-2 border-dark-1" : "border-trans bg-dark-1 text-white"}`} onClick={()=>setSelected(prev=>!prev)}>
-                        <span className="material-symbols-outlined">
-                            {selected ? 'close_small': buttonIcon}
-                        </span>
-                        {selected ? 'Cancel': buttonText}
-                    </button>
+                    <IconTextButton 
+                        onClick={()=>setSelected(prev=>!prev)} 
+                        disabled={isEditPending} 
+                        icon={selected ? 'close_small': buttonIcon}
+                        text={selected ? 'Cancel': buttonText}
+                        style={selected ? "bg-light-3 text-dark-2 border-dark-1" : "border-trans bg-dark-1 text-white"}
+                    />
                     {selected && 
-                        <button className="small-button flex-row align-center border-trans bg-dark-1 text-white" onClick={handleClick}>
-                            <span className="material-symbols-outlined">
-                                check
-                            </span>
-                            Done
-                        </button>
+                        <IconTextButton 
+                            onClick={handleDone} 
+                            disabled={isEditPending} 
+                            icon='check'
+                            text='Done'
+                            style='border-trans bg-dark-1 text-white'
+                        />   
                     }
                 </div>
             </div>
