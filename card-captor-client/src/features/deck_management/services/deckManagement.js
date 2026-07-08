@@ -24,7 +24,6 @@ export async function deleteDeck(deckId) {
 }
 
 export async function duplicateDeck({id, name}){
-    console.log(name);
     const data = await fetchData(`${base}/duplicate/${id}`, "POST", {name}, "Failed to Duplicate Deck");
 }
 

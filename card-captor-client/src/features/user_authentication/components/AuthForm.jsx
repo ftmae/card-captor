@@ -30,7 +30,6 @@ export default function AuthForm(){
         const password = formData.get('password');
         const email = formData.get('email');
         const emailLogin = formData.get('email-login');
-        console.log(email, emailLogin)
         const errors = authState === 'login' ? selected === 'username' ?  validateUsernamePassword(username, password) : validateEmailPassword(emailLogin, password) : validateAll(username, email, password)
         if(Object.keys(errors).length > 0){
             setValidations(errors);

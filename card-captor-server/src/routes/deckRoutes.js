@@ -87,7 +87,6 @@ router.post('/editStatus', asyncErrorWrapper(
 router.delete('/', asyncErrorWrapper(
     async (req, res)=>{
         let rawIds = req.query.ids;
-        console.log(rawIds);
         if(!rawIds) throw new MissingFieldError('Deck ID');
         if(typeof rawIds === 'string'){
             rawIds = [rawIds];

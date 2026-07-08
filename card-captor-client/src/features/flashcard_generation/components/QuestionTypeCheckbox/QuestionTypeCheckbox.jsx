@@ -1,7 +1,6 @@
 export default function QuestionTypeCheckbox({checkboxes, setCheckboxes}){
     function handleChange(event){
         const current = event.target.value;
-        console.log(current)
         setCheckboxes(prev=>(
             prev.map(checkbox => (
                 checkbox.value === current ? {...checkbox, checked: !checkbox.checked} : checkbox

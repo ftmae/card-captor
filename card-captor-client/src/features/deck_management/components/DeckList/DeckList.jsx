@@ -21,7 +21,6 @@ export default function DeckList(){
     ), [decks, searchInput]);
 
     function handleDone(){
-        console.log(checked);
         setDeleteDecks(false);
         removeDecks(checked, {
             onSuccess: setChecked(new Set())
