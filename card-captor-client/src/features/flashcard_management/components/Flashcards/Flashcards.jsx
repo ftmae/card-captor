@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { useSearchParams } from "react-router";
+import { useSearchParams, Link } from "react-router";
 import Flashcard from '../Flashcard/Flashcard.jsx';
 import TypeButton from "../TypeButton/TypeButton.jsx";
 import NewFlashcardForm from "../NewFlashcardForm/NewFlashcardForm.jsx";
@@ -7,10 +7,11 @@ import { useAddFlashcard, useDeleteFlashcard, useFlashcards } from "../../hooks/
 import useInlineDeckEdit from '../../../deck_management/hooks/useInlineDeckEdit.jsx';
 import IconButton from "../../../../shared/components/IconButton/IconButton.jsx";
 import IconTextButton from "../../../../shared/components/IconTextButton/IconTextButton.jsx";
-import { Link } from "react-router";
 import queryClient from "../../../../shared/queryClient.js";
 import EditDeckName from "../../../../shared/components/EditDeckName/EditDeckName.jsx";
 import useChecked from "../../../../shared/hooks/useChecked.jsx";
+import useSelectAll from "../../../../shared/hooks/useSelectAll.jsx";
+import BulkDelete from "../../../../shared/components/BulkDelete/BulkDelete.jsx";
 
 export default function Flashcards() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -18,40 +19,25 @@ export default function Flashcards() {
     const deckName = searchParams.get('deckName');
     const [create, setCreate] = useState(false);
     const [currentType, setCurrentType] = useState('All');
-    const [deleteCards, setDeleteCards] = useState(false);
+    const [isDeleteMode, setIsDeleteMode] = useState(false);
     const { data: flashcards, isLoading: isQueryLoading } = useFlashcards([deckId]);
     const { mutate: addCard, isPending: isAddPending } = useAddFlashcard(deckId, setCreate);
     const { mutate: removeCards, isPending: isRemovePening } = useDeleteFlashcard();
     const types = useMemo(()=>['All', ...new Set(flashcards?.map(flashcard=>flashcard.type))], [flashcards]);
     const filteredCards = currentType === 'All' ? flashcards : flashcards?.filter(flashcard => flashcard.type === currentType);
     const [checked, setChecked, handleOnChange] = useChecked(flashcards);
+    const [isAllSelected, onToggleSelectAll] = useSelectAll(checked, setChecked, filteredCards);
     const [isEdit, setIsEdit, updatedName, setUpdatedName, handleEdit, handleCancel, isEditPending] = useInlineDeckEdit(deckName, deckId, ()=>{
        const newParams = new URLSearchParams(searchParams);
        newParams.set('deckName', updatedName);
        setSearchParams(newParams, {replace: true});
     });
 
-    const isCurrentTypeAllSelected = useMemo(()=>{
-        if(!filteredCards || filteredCards.length === 0) return false;
-        return filteredCards.every(card=> checked.has(card.id));
-    }, [checked, filteredCards])
 
-    function handleDone(){
-        setDeleteCards(false);
+    function onConfirmDelete(){
+        setIsDeleteMode(false);
         removeCards(checked, {
             onSuccess: ()=> setChecked(new Set())
-        });
-    }
-    
-    function handleSelectAllToggle(){
-        setChecked(prev=>{
-            const newChecked = new Set(prev);
-            if(isCurrentTypeAllSelected){
-                filteredCards.forEach(card => newChecked.delete(card.id));
-            }else{
-                filteredCards.forEach(card=> newChecked.add(card.id));
-            }
-            return newChecked;
         });
     }
         
@@ -66,35 +52,16 @@ export default function Flashcards() {
                     </div>
                             
                     <div className="flex-row flex-wrap">
-                         {
-                            (filteredCards?.length > 0 &&
-                                <IconTextButton 
-                                    onClick={()=> setDeleteCards(prev=>!prev)} 
-                                    disabled={isQueryLoading || isAddPending} 
-                                    icon={deleteCards ? 'close_small' : 'delete'}
-                                    text={deleteCards ? '' : 'Delete Cards'}
-                                    style='bg-light-3 text-dark-2 border-dark-1' 
-                                />
-                            )
-                         }
-                        {deleteCards &&
-                            <>
-                                <IconTextButton 
-                                    onClick={handleDone} 
-                                    disabled={isQueryLoading || isAddPending} 
-                                    icon={'check'} 
-                                    text={''}
-                                    style='bg-dark-1 text-white border-trans' 
-                                />
-                                <IconTextButton 
-                                    onClick={handleSelectAllToggle} 
-                                    disabled={isQueryLoading || isAddPending} 
-                                    icon={isCurrentTypeAllSelected ? 'deselect' : 'select_all'} 
-                                    text={isCurrentTypeAllSelected ? 'Deselect All' : 'Select All'}
-                                    style='bg-dark-1 text-white border-trans' 
-                                />
-                            </>
-                        }
+                        <BulkDelete 
+                            data={filteredCards}
+                            isDeleteMode={isDeleteMode}
+                            setIsDeleteMode={setIsDeleteMode}
+                            isAllSelected={isAllSelected}
+                            onConfirmDelete={onConfirmDelete}
+                            onToggleSelectAll={onToggleSelectAll}
+                            disabled={isQueryLoading || isAddPending}
+                            deleteLabel="Delete Decks"
+                        />
                         <IconTextButton 
                             onClick={()=> setCreate(prev=>!prev)} 
                             disabled={isQueryLoading || isAddPending} 
@@ -118,7 +85,7 @@ export default function Flashcards() {
 
                 {(isQueryLoading || isAddPending) && <div>Loading...</div>}
                 {flashcards?.length > 0 ? 
-                    filteredCards.length > 0 ? 
+                    filteredCards.length > 0 && 
                         filteredCards.map(flashcard => 
                             <Flashcard 
                                 key={flashcard.id} 
@@ -127,23 +94,11 @@ export default function Flashcards() {
                                 deckId={flashcard.deckId}
                                 flashcardId={flashcard.id} 
                                 type={flashcard.type}
-                                deleteCards={deleteCards}
+                                isDeleteMode={isDeleteMode}
                                 isChecked={checked.has(flashcard.id)}
                                 handleOnChange={handleOnChange}
                             />)
-                        : flashcards.map(flashcard => 
-                            <Flashcard 
-                                key={flashcard.id} 
-                                question={flashcard.question} 
-                                answer={flashcard.answer} 
-                                deckId={flashcard.deckId}
-                                flashcardId={flashcard.id} 
-                                type={flashcard.type}
-                                deleteCards={deleteCards}
-                                isChecked={checked.has(flashcard.id)}
-                                handleOnChange={handleOnChange}
-                            />)
-                    : !isQueryLoading && <div className="flex-container-center fs-450 min-height-70vh">No Flashcards To Show.</div>
+                    : !isQueryLoading && <div className="flex-container-center fs-450 min-height-60vh">No Flashcards To Show.</div>
                 }
             </section>
         </>

@@ -5,23 +5,26 @@ import Searchbar from '../../../../shared/components/Searchbar/Searchbar.jsx';
 import IconTextButton from '../../../../shared/components/IconTextButton/IconTextButton.jsx';
 import useChecked from '../../../../shared/hooks/useChecked.jsx';
 import AddDeckForm from '../AddDeckForm/AddDeckForm.jsx';
-import './decklist.css';
+import useSelectAll from '../../../../shared/hooks/useSelectAll.jsx';
+import BulkDelete from '../../../../shared/components/BulkDelete/BulkDelete.jsx';
+import './decks.css';
 
-export default function DeckList(){
+export default function Decks(){
     const {data: decks, isLoading: isQueryLoading} = useDecks();
     const [searchInput, setSearchInput] = useState('');
     const [add, setAdd] = useState(false);
-    const [deleteDecks, setDeleteDecks] = useState(false);
+    const [isDeleteMode, setIsDeleteMode] = useState(false);
     const [checked, setChecked, handleOnChange] = useChecked(decks);
     const {mutate: removeDecks, isPending: isRemovePending} = useDeleteDeck();
-    const deckstoRender = useMemo(()=> (
+    const filteredDecks = useMemo(()=> (
         decks?.filter(deck => 
             (deck.name.toLowerCase().includes(searchInput.toLowerCase()))
         )
     ), [decks, searchInput]);
+    const [isAllSelected, onToggleSelectAll] = useSelectAll(checked, setChecked, filteredDecks);
 
-    function handleDone(){
-        setDeleteDecks(false);
+    function onConfirmDelete(){
+        setIsDeleteMode(false);
         removeDecks(checked, {
             onSuccess: setChecked(new Set())
         });
@@ -41,41 +44,33 @@ export default function DeckList(){
                             text={'Create Deck'}
                             style='bg-dark-1 text-white border-trans' 
                         />
-
-                        <IconTextButton 
-                            onClick={()=>setDeleteDecks(prev=> !prev)} 
-                            disabled={isQueryLoading || isRemovePending} 
-                            icon={deleteDecks ? 'close_small' : 'delete'} 
-                            text={deleteDecks ? '' : 'Delete Decks'}
-                            style='bg-light-3 text-dark-2 border-dark-1'
+                        <BulkDelete 
+                            data={filteredDecks}
+                            isDeleteMode={isDeleteMode}
+                            setIsDeleteMode={setIsDeleteMode}
+                            isAllSelected={isAllSelected}
+                            onConfirmDelete={onConfirmDelete}
+                            onToggleSelectAll={onToggleSelectAll}
+                            disabled={isQueryLoading || isRemovePending}
+                            deleteLabel="Delete Cards"
                         />
-
-                        {deleteDecks &&
-                            <IconTextButton 
-                                onClick={handleDone} 
-                                disabled={isQueryLoading || isRemovePending} 
-                                icon={'check'} 
-                                text={''}
-                                style='bg-dark-1 text-white border-trans' 
-                            />
-                        }
                     </div>
                 </div>
                 
                 <div className="grid-responsive">
                     {
                         (isQueryLoading) ? <div className="flex-container-center min-height-70-vh">Loading Decks</div>
-                        : deckstoRender?.length > 0 ? 
-                        deckstoRender.map(deck=>(
+                        : filteredDecks?.length > 0 ? 
+                        filteredDecks.map(deck=>(
                             <Deck 
                                 key={deck.id} 
                                 name={deck.name} 
                                 id={deck.id} 
-                                deleteDecks={deleteDecks} 
+                                isDeleteMode={isDeleteMode} 
                                 handleOnChange={handleOnChange} 
                                 isChecked={checked.has(deck.id)} 
                             />
-                        )) : <p className="fs-450">No Decks To Show</p>
+                        )) : <div className="flex-container-center fs-450 min-height-60vh">No Decks To Show.</div>
                     }
                 </div>
             </section>

@@ -4,7 +4,7 @@ import NewFlashcardForm from "../NewFlashcardForm/NewFlashcardForm";
 import { useDeleteFlashcard, useEditFlashcard } from "../../hooks/useFlashcards.jsx";
 import Checkbox from "../../../../shared/components/Checkbox/Checkbox.jsx";
 
-export default function Flashcard({question, answer, deckId, flashcardId, type, isChecked, handleOnChange, deleteCards}){
+export default function Flashcard({question, answer, deckId, flashcardId, type, isChecked, handleOnChange, isDeleteMode}){
     const [isEdit, setIsEdit] = useState(false);
     const { mutate: deleteCard, isPending: isDelPending } = useDeleteFlashcard(deckId)
     const { mutate: editCard, isPending: isEditPending } = useEditFlashcard(deckId, setIsEdit);
@@ -24,7 +24,7 @@ export default function Flashcard({question, answer, deckId, flashcardId, type, 
             <div className="flex-column border-dark-2-trans50 bg-white container hover mb-05 width-responsive">
                 <div className="flex-row justify-space-between">
                     <div className="flex-row gap-02 align-center">
-                        {deleteCards && <Checkbox handleOnChange={handleOnChange} isChecked={isChecked} id={flashcardId} /> }
+                        {isDeleteMode && <Checkbox handleOnChange={handleOnChange} isChecked={isChecked} id={flashcardId} /> }
                         <p>{type}</p>
                     </div>
                     <div className="flex-row">

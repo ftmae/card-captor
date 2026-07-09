@@ -4,7 +4,7 @@ import queryClient from './shared/queryClient.js';
 import FlashcardSourceForm from './features/flashcard_generation/components/FlashcardSourceForm/FlashcardSourceForm.jsx';
 import Flashcards from './features/flashcard_management/components/Flashcards/Flashcards.jsx';
 import Home from './features/home/Home/Home.jsx';
-import DeckList from './features/deck_management/components/DeckList/DeckList.jsx';
+import Decks from './features/deck_management/components/Decks/Decks.jsx';
 import MainLayout from './layout/MainLayout.jsx';
 import { guardLoader, protectedLoader } from './features/user_authentication/loaders/authLoaders.js';
 import { logoutAction } from './features/user_authentication/actions/authActions.js';
@@ -96,7 +96,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/decks',
-        element: <DeckList />,
+        element: <Decks />,
       },
       {
         path: '/deck_selection',
