@@ -14,8 +14,10 @@ export async function createFlashcard({deckId, question, answer, type}){
     return data;
 }
 
-export async function deleteFlashcard(id){
-    const data = await fetchData(`${base}/${id}`, "DELETE", null, "Failed to Delete Flashcard");
+export async function deleteFlashcard(flashcardIds){
+    const searchParams = new URLSearchParams();
+    flashcardIds.forEach((flashcardId)=> searchParams.append('ids', flashcardId));
+    const data = await fetchData(`${base}?${searchParams.toString()}`, "DELETE", null, "Failed to Delete Flashcard");
     return data;
 }
 

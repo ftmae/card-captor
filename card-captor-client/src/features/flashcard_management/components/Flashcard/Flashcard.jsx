@@ -2,8 +2,9 @@ import { useState } from "react";
 import IconButton from "../../../../shared/components/IconButton/IconButton";
 import NewFlashcardForm from "../NewFlashcardForm/NewFlashcardForm";
 import { useDeleteFlashcard, useEditFlashcard } from "../../hooks/useFlashcards.jsx";
+import Checkbox from "../../../../shared/components/Checkbox/Checkbox.jsx";
 
-export default function Flashcard({question, answer, deckId, flashcardId, type}){
+export default function Flashcard({question, answer, deckId, flashcardId, type, isChecked, handleOnChange, deleteCards}){
     const [isEdit, setIsEdit] = useState(false);
     const { mutate: deleteCard, isPending: isDelPending } = useDeleteFlashcard(deckId)
     const { mutate: editCard, isPending: isEditPending } = useEditFlashcard(deckId, setIsEdit);
@@ -22,9 +23,12 @@ export default function Flashcard({question, answer, deckId, flashcardId, type})
 
             <div className="flex-column border-dark-2-trans50 bg-white container hover mb-05 width-responsive">
                 <div className="flex-row justify-space-between">
-                    <p>{type}</p>
+                    <div className="flex-row gap-02 align-center">
+                        {deleteCards && <Checkbox handleOnChange={handleOnChange} isChecked={isChecked} id={flashcardId} /> }
+                        <p>{type}</p>
+                    </div>
                     <div className="flex-row">
-                        <IconButton title="Delete Flashcard" onClick={()=>deleteCard(flashcardId)} icon={'delete'} disabled={isDelPending || isEditPending } buttonStyle="flex-row align-center border-dark-2 bg-light-1" spanStyle="text-dark-2"/>
+                        <IconButton title="Delete Flashcard" onClick={()=>deleteCard([flashcardId])} icon={'delete'} disabled={isDelPending || isEditPending } buttonStyle="flex-row align-center border-dark-2 bg-light-1" spanStyle="text-dark-2"/>
                         <IconButton title="Edit Flashcard" onClick={()=>setIsEdit(true)} icon={isEdit ? 'check': 'edit_square'} disabled={isDelPending || isEditPending } buttonStyle="flex-row align-center border-dark-2 bg-light-1" spanStyle="text-dark-2"/>
                     </div>
                 </div>

@@ -404,6 +404,7 @@ a{
 .border-light-2{ border: solid 1px hsl(var(--clr-light-2)); }
 .border-light-3{ border: solid 1px hsl(var(--clr-light-3)); }
 .border-trans{ border: solid 1px transparent; }
+.border-error-dark{ border: solid 1px hsl(var(--clr-error-dark))}
 .border-none{ border: none}
 .border-radius-05{ border-radius: 0.5rem; }
 

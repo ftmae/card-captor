@@ -5,6 +5,7 @@ import asyncErrorWrapper from '../utils/asyncErrorWrapper.js';
 import validateFields from '../utils/validation.js';
 import { RecordNotFoundError } from '../custom-error-handling/DbError.js';
 import { createEmptyCard } from 'ts-fsrs';
+import { MissingFieldError } from '../custom-error-handling/ValidationError.js';
 
 const router = express.Router();
 
@@ -80,13 +81,16 @@ router.post('/create', asyncErrorWrapper(
     }
 ))
 
-router.delete('/:id', asyncErrorWrapper(
+router.delete('/', asyncErrorWrapper(
     async (req, res)=>{
-        const id = parseInt(req.params.id);
-        validateFields([{value: id, name: "Flashcard ID", type: "id"}])
-
-        await prisma.flashcard.delete({
-            where: { id }
+        let rawIds = req.query.ids;
+        if(!rawIds) throw new MissingFieldError('Flashcard ID');
+        if(typeof rawIds === 'string') rawIds = [rawIds];
+        const parsedIds = rawIds.map(id => Number.parseInt(id));
+        await prisma.flashcard.deleteMany({
+            where: { 
+                id: {in: parsedIds}
+             }
         });
         return res.status(200).json({data: "Flashcard Deleted Successfully"});
     }
