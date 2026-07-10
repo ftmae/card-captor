@@ -20,9 +20,9 @@ export default function Flashcards() {
     const [create, setCreate] = useState(false);
     const [currentType, setCurrentType] = useState('All');
     const [isDeleteMode, setIsDeleteMode] = useState(false);
-    const { data: flashcards, isLoading: isQueryLoading } = useFlashcards([deckId]);
+    const { data: flashcards, isLoading: isQueryLoading } = useFlashcards(deckId);
     const { mutate: addCard, isPending: isAddPending } = useAddFlashcard(deckId, setCreate);
-    const { mutate: removeCards, isPending: isRemovePening } = useDeleteFlashcard();
+    const { mutate: removeCards, isPending: isRemovePending } = useDeleteFlashcard();
     const types = useMemo(()=>['All', ...new Set(flashcards?.map(flashcard=>flashcard.type))], [flashcards]);
     const filteredCards = currentType === 'All' ? flashcards : flashcards?.filter(flashcard => flashcard.type === currentType);
     const [checked, setChecked, handleOnChange] = useChecked(flashcards);
@@ -59,12 +59,12 @@ export default function Flashcards() {
                             isAllSelected={isAllSelected}
                             onConfirmDelete={onConfirmDelete}
                             onToggleSelectAll={onToggleSelectAll}
-                            disabled={isQueryLoading || isAddPending}
+                            disabled={isQueryLoading || isAddPending || isRemovePending}
                             deleteLabel="Delete Decks"
                         />
                         <IconTextButton 
                             onClick={()=> setCreate(prev=>!prev)} 
-                            disabled={isQueryLoading || isAddPending} 
+                            disabled={isQueryLoading || isAddPending || isRemovePending} 
                             icon={'add'} 
                             text={'Add Card'}
                             style='bg-dark-1 text-white border-trans flex-grow-1 ' 

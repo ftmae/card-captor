@@ -9,8 +9,8 @@ export function useGenerate(deckId, deckName){
 
     return useMutation({
         mutationFn: generateCards,
-        onSuccess: ()=>{
-            queryClient.invalidateQueries({queryKey: ['flashcards', deckId]});
+        onSuccess: async ()=>{
+            await queryClient.invalidateQueries({queryKey: ['flashcards', deckId]});
             navigate({pathname: '/flashcards', search: `?deckId=${deckId}&deckName=${deckName}`});
             toast.success('Flashcards Generated Successfully');
         },
