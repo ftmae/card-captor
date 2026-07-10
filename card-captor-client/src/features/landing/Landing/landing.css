@@ -14,6 +14,24 @@
     gap: 1rem;
 }
 
+.spinny-loader{
+    border: 2px solid hsl(var(--clr-white));
+    border-radius: 100%;
+    height: 30px;
+    aspect-ratio: 1;
+    border-left: 2px solid hsl(var(--clr-dark-2));
+    animation: spinny-loader 0.5s linear infinite;
+}
+
+@keyframes spinny-loader {
+    from{
+        transform: rotate(0);
+    }
+    to{
+        transform: rotate(360deg);
+    }
+    
+}
 @media (min-width: 768px) {
     .hero-container{
         width: 60%;

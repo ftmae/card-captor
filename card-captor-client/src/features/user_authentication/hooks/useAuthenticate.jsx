@@ -1,11 +1,18 @@
-import { useMutation } from "@tanstack/react-query";
-import {updateUser, forgotPassword, resetPassword, loginRequest, registerRequest, logoutRequest} from "../services/authenticate.js";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {updateUser, forgotPassword, resetPassword, loginRequest, registerRequest, logoutRequest, verifyAuth} from "../services/authenticate.js";
 import { useNavigate } from "react-router";
 import queryClient from "../../../shared/queryClient.js";
 import { toast } from "react-toastify";
 
 function onError(error){
     toast.error(error.message)
+}
+
+export function useAuthenticate(){
+    return useQuery({
+        queryKey: ['isAuthenticated'],
+        queryFn: verifyAuth
+    })
 }
 
 export function useLogin(){

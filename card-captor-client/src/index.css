@@ -265,7 +265,9 @@ a{
 .padding-05{ padding: 0.5rem; }
 .padding-1{ padding: 1rem; }
 .padding-2{ padding: 2rem; }
+.padding-inline-1{ padding-inline: 1rem; }
 .padding-inline-2{ padding-inline: 2rem; }
+.padding-block-05{ padding-block: 0.5rem; }
 .padding-top-07{ padding-top: 0.7rem; }
 .padding-bottom-07{ padding-bottom: 0.7rem;}
 
@@ -406,6 +408,7 @@ a{
 .border-trans{ border: solid 1px transparent; }
 .border-error-dark{ border: solid 1px hsl(var(--clr-error-dark))}
 .border-none{ border: none}
+.border-radius-2{ border-radius: 2rem; }
 .border-radius-05{ border-radius: 0.5rem; }
 
 /* ----------------- */

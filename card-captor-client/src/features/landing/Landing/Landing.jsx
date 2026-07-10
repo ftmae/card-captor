@@ -1,19 +1,22 @@
 import { Link } from "react-router"
 import { useEffect, useState, useRef} from "react";
+import { useAuthenticate } from "../../user_authentication/hooks/useAuthenticate.jsx";
 import queryClient from "../../../shared/queryClient.js";
 import Step from "../Step/Step.jsx";
 import './landing.css';
 
+const steps = [
+    {stepNum: 1, heading: 'Upload A PDF or Text', body: 'Upload lecture notes, textbook chapters or any study material.'},
+    {stepNum: 2, heading: 'Select Flaschcard Format', body: 'Choose from a variety of question answer types - tailored to how you think.'},
+    {stepNum: 3, heading: 'Study with Spaced Repetition', body: 'An adaptive learning algorithm that shows the right card at the right time so that all your content is learned thoroughly.'},
+]
+
 export default function Landing(){
     const [isHowItWorks, setIsHowItWorks] = useState(false);
     const howItWorksSection = useRef(null);
-    const userAuth = queryClient.getQueryData(['isAuthenticated']);
-    const isAuthenticated = userAuth?.authenticated;
-    const steps = [
-        {stepNum: 1, heading: 'Upload A PDF or Text', body: 'Upload lecture notes, textbook chapters or any study material.'},
-        {stepNum: 2, heading: 'Select Flaschcard Format', body: 'Choose from a variety of question answer types - tailored to how you think.'},
-        {stepNum: 3, heading: 'Study with Spaced Repetition', body: 'An adaptive learning algorithm that shows the right card at the right time so that all your content is learned thoroughly.'},
-    ]
+    const { data: authData, isLoading} = useAuthenticate();
+    const isAuthenticated = authData?.authenticated;
+
 
     function showHowItWorks(){
         howItWorksSection.current ? howItWorksSection.current.scrollIntoView({behavior: 'smooth'}) : null;
@@ -28,8 +31,16 @@ export default function Landing(){
             <section className="hero-container">
                 <h1 className="ff-serif text-white fs-800 text-center">Study <span className="italic ff text-light-2">Smarter,</span> Not Harder</h1>
                 <p className="ff-sans fw-150 fs-450 text-white text-center">Upload any PDF or text, and let AI generate personalized flashcards — then study with spaced repetition for maximum retention!</p>
-                <div className="flex-row">
-                    <Link to="/home" className="fs-425 large-button bg-white text-dark-2 border-trans">{isAuthenticated ? 'Go to Dashboard' : 'Get Started for Free'}</Link>
+                <div className="flex-row align-center">
+                    {isLoading ? 
+                        <div className="flex-row justify-center align-center fs-425 padding-inline-1 padding-block-05 border-radius-2 bg-white text-dark-2">
+                            <div className="spinny-loader"></div> Waking Up Server
+                        </div>
+                        :
+                        <Link to="/home" className="fs-425 large-button bg-white text-dark-2 border-trans flex-row align-center">
+                            {isAuthenticated ? 'Go to Dashboard' : 'Get Started for Free'}
+                        </Link>
+                    }
                     <button className="fs-425 large-button bg-dark-1 text-white border-trans" onClick={showHowItWorks}>How It Works</button>
                 </div>
             </section>
