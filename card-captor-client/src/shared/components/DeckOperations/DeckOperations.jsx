@@ -1,5 +1,5 @@
 import { useDeleteDeck } from "../../../modules/deck_management/hooks/useDecks.jsx";
-import DeckLink from "../../../modules/deck_management/components/DeckLink/DeckLink.jsx";
+import DeckLink from "./DeckLink/DeckLink.jsx";
 import IconButton from "../IconButton/IconButton.jsx";
 
 export default function DeckOperations({handleEdit, name, id, isEdit, isEditPending}){

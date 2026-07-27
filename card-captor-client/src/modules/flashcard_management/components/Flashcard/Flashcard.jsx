@@ -1,6 +1,6 @@
 import { useState } from "react";
 import IconButton from "../../../../shared/components/IconButton/IconButton";
-import NewFlashcardForm from "../NewFlashcardForm/NewFlashcardForm";
+import FlashcardForm from "../FlashcardForm/FlashcardForm";
 import { useDeleteFlashcard, useEditFlashcard } from "../../hooks/useFlashcards.jsx";
 import Checkbox from "../../../../shared/components/Checkbox/Checkbox.jsx";
 
@@ -11,7 +11,7 @@ export default function Flashcard({question, answer, deckId, flashcardId, type, 
 
     return (
         <>
-            {isEdit && <NewFlashcardForm 
+            {isEdit && <FlashcardForm 
                 formType="edit" 
                 action={editCard} 
                 setModalState={setIsEdit} 

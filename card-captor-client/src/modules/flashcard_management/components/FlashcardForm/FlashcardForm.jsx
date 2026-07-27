@@ -7,7 +7,7 @@ const QUESTION_TYPES = [
     'True / False'
 ];
 
-export default function NewFlashcardForm({formType, action, setModalState, id, defaultQuestion, defaultAnswer, defaultType, deckId}){
+export default function FlashcardForm({formType, action, setModalState, id, defaultQuestion, defaultAnswer, defaultType, deckId}){
     function handleSubmit(event){
         event.preventDefault();
         const formData = new FormData(event.target);

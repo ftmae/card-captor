@@ -2,7 +2,7 @@ import { useState } from 'react';
 import IconButton from '../../../shared/components/IconButton/IconButton.jsx';
 import { useRecallTypes, useUpdateRecallType } from '../hooks/useSpacedRep.jsx';
 import { useEditFlashcard } from '../../flashcard_management/hooks/useFlashcards.jsx';
-import NewFlashcardForm from '../../flashcard_management/components/NewFlashcardForm/NewFlashcardForm.jsx';
+import FlashcardForm from '../../flashcard_management/components/FlashcardForm/FlashcardForm.jsx';
 
 export default function StudyCard({flashcards, current, setCurrent, side, setSide}){
     const [isEdit, setIsEdit] = useState(false);
@@ -19,7 +19,7 @@ export default function StudyCard({flashcards, current, setCurrent, side, setSid
     
     return(
         <>
-            {isEdit && <NewFlashcardForm 
+            {isEdit && <FlashcardForm 
                 formType="edit" 
                 action={editCard} 
                 setModalState={setIsEdit} 

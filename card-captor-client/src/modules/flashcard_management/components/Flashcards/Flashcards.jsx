@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useSearchParams, Link } from "react-router";
 import Flashcard from '../Flashcard/Flashcard.jsx';
 import TypeButton from "../TypeButton/TypeButton.jsx";
-import NewFlashcardForm from "../NewFlashcardForm/NewFlashcardForm.jsx";
+import FlashcardForm from "../FlashcardForm/FlashcardForm.jsx";
 import { useAddFlashcard, useDeleteFlashcard, useFlashcards } from "../../hooks/useFlashcards.jsx";
 import useInlineDeckEdit from '../../../deck_management/hooks/useInlineDeckEdit.jsx';
 import IconButton from "../../../../shared/components/IconButton/IconButton.jsx";
@@ -43,7 +43,7 @@ export default function Flashcards() {
         
     return (
         <>
-            {create && <NewFlashcardForm formType="add" action={addCard} setModalState={setCreate} id={deckId} />}
+            {create && <FlashcardForm formType="add" action={addCard} setModalState={setCreate} id={deckId} />}
             <section className="mt-7 container flex-column align-center">
                 <div className="flex-column mb-05">
                     <div className="flex-row align-center mb-05">
