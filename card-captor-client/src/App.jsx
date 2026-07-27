@@ -1,24 +1,24 @@
 import { createBrowserRouter, RouterProvider, Navigate, redirect, useSearchParams, useRouteError } from 'react-router';
 import { QueryClientProvider } from '@tanstack/react-query';
 import queryClient from './shared/queryClient.js';
-import FlashcardSourceForm from './features/flashcard_generation/components/FlashcardSourceForm/FlashcardSourceForm.jsx';
-import Flashcards from './features/flashcard_management/components/Flashcards/Flashcards.jsx';
-import Home from './features/home/Home/Home.jsx';
-import Decks from './features/deck_management/components/Decks/Decks.jsx';
+import FlashcardSourceForm from './modules/flashcard_generation/components/FlashcardSourceForm/FlashcardSourceForm.jsx';
+import Flashcards from './modules/flashcard_management/components/Flashcards/Flashcards.jsx';
+import Home from './modules/home/Home/Home.jsx';
+import Decks from './modules/deck_management/components/Decks/Decks.jsx';
 import MainLayout from './layout/MainLayout.jsx';
-import { guardLoader, protectedLoader } from './features/user_authentication/loaders/authLoaders.js';
-import { logoutAction } from './features/user_authentication/actions/authActions.js';
-import Landing from './features/landing/Landing/Landing.jsx';
-import DeckSelection from './features/spaced_repetition/components/DeckSelection.jsx';
+import { guardLoader, protectedLoader } from './modules/user_authentication/loaders/authLoaders.js';
+import { logoutAction } from './modules/user_authentication/actions/authActions.js';
+import Landing from './modules/landing/Landing/Landing.jsx';
+import DeckSelection from './modules/spaced_repetition/components/DeckSelection.jsx';
 import { ToastContainer, Flip } from 'react-toastify';
 import { BadgeCheck, CircleAlert, BadgeInfo } from 'lucide-react';
 import NotFound from './layout/NotFound.jsx';
-import StudyCards from './features/spaced_repetition/components/StudyCards.jsx';
-import UpdateUserDetails from './features/user_authentication/components/UpdateUserDetails.jsx';
-import LoginForm from './features/user_authentication/components/LoginForm.jsx';
-import RegisterForm from './features/user_authentication/components/RegisterForm.jsx';
-import ForgotPasswordForm from './features/user_authentication/components/ForgotPasswordForm.jsx';
-import ResetPasswordForm from './features/user_authentication/components/ResetPasswordForm.jsx';
+import StudyCards from './modules/spaced_repetition/components/StudyCards.jsx';
+import UpdateUserDetails from './modules/user_authentication/components/UpdateUserDetails.jsx';
+import LoginForm from './modules/user_authentication/components/LoginForm.jsx';
+import RegisterForm from './modules/user_authentication/components/RegisterForm.jsx';
+import ForgotPasswordForm from './modules/user_authentication/components/ForgotPasswordForm.jsx';
+import ResetPasswordForm from './modules/user_authentication/components/ResetPasswordForm.jsx';
 
 function ErrorBoundary() {
   let error = useRouteError();
