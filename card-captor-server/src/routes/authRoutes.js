@@ -8,7 +8,7 @@ import validateFields from '../utils/validation.js';
 import {generateRandomToken, hashToken} from '../utils/generateToken.js';
 import { RecordAlreadyExistsError, RecordNotFoundError } from '../custom-error-handling/DbError.js';
 import { InvalidFieldError } from '../custom-error-handling/ValidationError.js';
-import transporter from '../utils/email.js';
+import transporter from '../services/email.js';
 import dayjs from 'dayjs';
 
 const router = express.Router();
