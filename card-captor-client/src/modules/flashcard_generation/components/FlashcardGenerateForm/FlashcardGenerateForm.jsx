@@ -9,7 +9,7 @@ import extractText from '../../services/extractPdfText.js';
 import { useGenerate } from '../../hooks/useGenerate.jsx';
 import useGenerationFormStore from '../../store/generationFormStore.js';
 import { toast } from 'react-toastify';
-import './flashcardsourceform.css';
+import './flashcardgenerateform.css';
 
 const QUESTION_TYPES = [
     { value: "fob", label: 'Fill in the Blanks', checked: true },
@@ -25,7 +25,7 @@ const options = [
     {key: '2-radio-pdf', id: 'pdf', label:'PDF', value: 'pdf'},
 ];
 
-export default function FlashcardSourceForm() {
+export default function FlashcardGenerateForm() {
     const [searchParams] = useSearchParams();
     const deckId = searchParams.get('deckId');
     const deckName = searchParams.get('deckName');

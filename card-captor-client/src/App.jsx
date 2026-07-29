@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider, Navigate, redirect, useSearchParams, useRouteError } from 'react-router';
 import { QueryClientProvider } from '@tanstack/react-query';
 import queryClient from './shared/queryClient.js';
-import FlashcardSourceForm from './modules/flashcard_generation/components/FlashcardSourceForm/FlashcardSourceForm.jsx';
+import FlashcardGenerateForm from './modules/flashcard_generation/components/FlashcardGenerateForm/FlashcardGenerateForm.jsx';
 import Flashcards from './modules/flashcard_management/components/Flashcards/Flashcards.jsx';
 import Home from './modules/home/Home/Home.jsx';
 import Decks from './modules/deck_management/components/Decks/Decks.jsx';
@@ -88,7 +88,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/generate_flashcards',
-        element: <FlashcardSourceForm />,
+        element: <FlashcardGenerateForm />,
       },
       { 
         path: '/flashcards',
