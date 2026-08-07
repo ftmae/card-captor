@@ -70,7 +70,6 @@ const router = createBrowserRouter([
   },
   {
     path: '/resetPassword',
-    loader: guardLoader,
     element: <ResetPasswordForm />,
     errorElement: <ErrorBoundary />,
     hydrateFallbackElement: <ServerWakeUpFallback />
