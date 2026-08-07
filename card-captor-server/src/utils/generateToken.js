@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 export function generateRandomToken(){
     return new Promise(resolve => {
-        crypto.randomBytes(21, (err, buffer)=>{
+        crypto.randomBytes(32, (err, buffer)=>{
             if(err) throw err;
             const bufferHex = buffer.toString('hex');
             resolve(bufferHex);

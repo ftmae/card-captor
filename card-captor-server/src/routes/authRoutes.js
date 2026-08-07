@@ -1,29 +1,39 @@
 import express from 'express';
 import prisma from '../prismaClient.js';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import authMiddleware from '../middleware/authMiddleware.js';
+import {optionalAuthMiddleware} from '../middleware/authMiddleware.js';
 import asyncErrorWrapper from '../utils/asyncErrorWrapper.js';
 import validateFields from '../utils/validation.js';
+import { setCookie, clearCookie } from '../utils/cookies.js';
 import {generateRandomToken, hashToken} from '../utils/generateToken.js';
 import { RecordAlreadyExistsError, RecordNotFoundError } from '../custom-error-handling/DbError.js';
 import { InvalidFieldError } from '../custom-error-handling/ValidationError.js';
+import createJWT from '../services/jwt.js';
 import transporter from '../services/email.js';
 import dayjs from 'dayjs';
 
+const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+const FIFTEEN_MINS = 15 * 60 * 1000;
+const PASSWORD_HASH = 8;
 const router = express.Router();
-const isProduction = process.env.NODE_ENV === 'production';
+
+async function createRefreshToken(){
+    const refreshToken = await generateRandomToken();
+    const refreshTokenHash = hashToken(refreshToken);
+    const expiresAt = new Date(Date.now() + THIRTY_DAYS);
+    return {refreshToken, refreshTokenHash, expiresAt};
+}
 
 router.post('/register', asyncErrorWrapper(
     async (req, res) => {
-        
         const { username, password, email } = req.body;
         validateFields([
             {value: username, name: "Username", type: "text"},
             {value: password, name: "Password", type: "text"},
             {value: email, name: "Email", type: "text"},
         ]);
-        const hashedPassword = await bcrypt.hash(password, 8);
+        const hashedPassword = await bcrypt.hash(password, PASSWORD_HASH);
 
         const userExists = await prisma.user.findUnique({
             where: { username }
@@ -32,9 +42,7 @@ router.post('/register', asyncErrorWrapper(
         if (userExists) throw new RecordAlreadyExistsError(`User - ${user}`);
 
         const emailExists = await prisma.user.findUnique({
-            where: {
-                email,
-            }
+            where: { email }
         });
 
         if (emailExists) throw new RecordAlreadyExistsError(`E-Mail - ${email}`);
@@ -54,18 +62,22 @@ router.post('/register', asyncErrorWrapper(
             }
         })
 
-        const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
-        res.cookie("authToken", token, {
-            maxAge: 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: isProduction ? 'none' : 'Lax'
-        });
+        const authToken = createJWT(newUser.id);
+        const {refreshToken, refreshTokenHash, expiresAt} = await createRefreshToken();
 
+        await prisma.refreshToken.create({
+            data: {
+                refreshToken: refreshTokenHash,
+                expiresAt,
+                userId: user.id,
+            }
+        })
+
+        setCookie(res, "authToken", FIFTEEN_MINS, authToken);
+        setCookie(res, "refreshToken", THIRTY_DAYS, refreshToken);
         return res.status(200).json({ message: "Authentication Successful" });
     }
 ));
-
 
 router.post('/login', asyncErrorWrapper(
     async (req, res) => {
@@ -85,22 +97,51 @@ router.post('/login', asyncErrorWrapper(
         if (!user) throw new RecordNotFoundError(`User - ${user}`);
 
         const passwordIsValid = await bcrypt.compare(password, user.password);
-
         if (!passwordIsValid) throw new InvalidFieldError(`Password`);
         
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
-        res.cookie("authToken", token, {
-            maxAge: 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: isProduction ? 'none' : 'Lax'
-        });
-
+        const authToken = createJWT(user.id);
+        const {refreshToken, refreshTokenHash, expiresAt} = await createRefreshToken();
+        
+        await prisma.refreshToken.create({
+            data: {
+                refreshToken: refreshTokenHash,
+                expiresAt,
+                userId: user.id,
+            }
+        })
+        setCookie(res, "authToken", FIFTEEN_MINS, authToken);
+        setCookie(res, "refreshToken", THIRTY_DAYS, refreshToken);
         return res.status(200).json({ message: "Authentication Successful" });
     }
 ));
 
-router.get('/user', authMiddleware, asyncErrorWrapper(
+router.post('/refresh', asyncErrorWrapper(
+    async (req, res) =>{
+        const refreshTokenCookie = req.cookies.refreshToken;
+        if(!refreshTokenCookie) return res.status(401).json({message: "Invalid Refresh Token"});
+        const oldRefreshTokenHash = hashToken(refreshTokenCookie);
+        const refreshTokenRecord = await prisma.refreshToken.findUnique({
+            where: { refreshToken: oldRefreshTokenHash }
+        });
+        const now = dayjs();
+        const tokenExpiresAt = dayjs(refreshTokenRecord.expiresAt);
+        if(!refreshTokenRecord || now.isAfter(tokenExpiresAt)) return res.status(401).json({message: "Invalid Refresh Token"});
+        const authToken = createJWT(refreshTokenRecord.userId);
+        const {refreshToken, refreshTokenHash, expiresAt} = await createRefreshToken();
+        await prisma.refreshToken.create({
+            data: {
+                refreshToken: refreshTokenHash,
+                expiresAt,
+                userId: refreshTokenRecord.userId,
+            }
+        });
+        setCookie(res, "authToken", FIFTEEN_MINS, authToken);
+        setCookie(res, "refreshToken", THIRTY_DAYS, refreshToken);
+        return res.status(200).json({ message: "Reauthentication Successful" });
+    }
+))
+
+router.get('/user', optionalAuthMiddleware, asyncErrorWrapper(
     async (req, res) => {
         const user = await prisma.user.findUnique({
             where: {
@@ -153,7 +194,7 @@ router.put('/user', authMiddleware, asyncErrorWrapper(
             validateFields([ {type: 'text', value: newPassword, name: 'New Password'} ]);
             if (user.password === newPassword) console.log('Update Not Required');
             else {
-                const hashedPassword = await bcrypt.hash(newPassword, 8);
+                const hashedPassword = await bcrypt.hash(newPassword, PASSWORD_HASH);
                 const updatedUser = await prisma.user.update({
                     where: { id },
                     data: { password: hashedPassword }
@@ -164,14 +205,17 @@ router.put('/user', authMiddleware, asyncErrorWrapper(
     }
 ))
 
-router.post('/logout', authMiddleware, (req, res) => {
+router.post('/logout', optionalAuthMiddleware, async (req, res) => {
     try {
-        res.clearCookie('authToken', {
-            maxAge: 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: isProduction ? 'none' : 'Lax'
+        const authToken = req.cookies.authToken;
+        const refreshToken = req.cookies.refreshToken;
+        await prisma.refreshToken.delete({
+            where: {
+                refreshToken: hashToken(refreshToken)
+            }
         });
+        clearCookie(res, 'authToken', FIFTEEN_MINS);
+        clearCookie(res, 'refreshToken', THIRTY_DAYS);
         return res.status(200).json({ message: 'Logged Out Successfully', 'authenticated': false });
     }
     catch (error) {
@@ -186,18 +230,19 @@ router.post('/forgotPassword', asyncErrorWrapper(
         validateFields([
             {type: 'text', value: email, name: 'E-Mail'},
         ]);
-
+        
+        const genericResponse = {message: "If your email is registered you will receive a mail shortly"}
         const user = await prisma.user.findUnique({ where: { email } });
-        if(!user) return res.status(200).json({message: "If your email is registered you will receive a mail shortly"});
+        if(!user) return res.status(200).json(genericResponse);
         const token = await generateRandomToken();
         const tokenHash = hashToken(token);
         const tokenExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
         await prisma.user.update({
             where: {email},
-            data: { resetPasswordToken: tokenHash, resetPasswordTokenAt: tokenExpiresAt }
+            data: { resetPasswordToken: tokenHash, resetPasswordTokenExpiresAt: tokenExpiresAt }
         });
 
-        const url = `${process.env.FRONTEND_URL}/resetPassword?token=${token}&email=${email}`;
+        const url = `${process.env.FRONTEND_URL}/resetPassword?token=${token}`;
         await transporter.sendMail({
             from: '"Card Captor" <moaiyadi.fatemaabbas@gmail.com>' ,
             to: email,
@@ -209,36 +254,37 @@ router.post('/forgotPassword', asyncErrorWrapper(
                 <a href="${url}">Reset Password</a>
             `
         });
-        return res.status(200).json({message: "If your email is registered you will receive a mail shortly"});
+        return res.status(200).json(genericResponse);
     }
 ));
 
 router.post('/resetPassword', asyncErrorWrapper(
     async(req, res) => {
-        const {password, token, email} = req.body; 
+        const {password, token} = req.body; 
     
         validateFields([
             {name: "New Password", value: password, type: 'text'},
-            {name: "E-Mail", value: email, type: 'text'},
             {name: "Token", value: token, type: 'text'},
         ]);
 
         const tokenHash = hashToken(token);
         const user = await prisma.user.findUnique({
-            where: { email }
+            where: { resetPasswordToken: tokenHash }
         });
+        if(!user) return res.status(401).json({message: 'Invalid or Expired Token'});
         const now = dayjs();
-        const tokenExpiresAt = dayjs(user.resetPasswordTokenAt);
+        const tokenExpiresAt = dayjs(user.resetPasswordTokenExpiresAt);
 
-        if(now.isAfter(tokenExpiresAt.add(10, 'm'))) return res.status(403).json({message: 'Token Has Expired'});
-        if((user.resetPasswordToken != tokenHash)) return res.status(403).json({message: 'Invalid Token'});
+        if(now.isAfter(tokenExpiresAt)) return res.status(403).json({message: 'Token has Expired'});
 
-        const hashedPassword = await bcrypt.hash(password, 8);
+        const hashedPassword = await bcrypt.hash(password, PASSWORD_HASH);
         await prisma.user.update({
-            where: { email },
-            data: { password: hashedPassword }
+            where: { id: user.id },
+            data: { password: hashedPassword, resetPasswordToken: null, resetPasswordTokenExpiresAt: null }
         });
-
+        
+        clearCookie(res, 'authToken', FIFTEEN_MINS);
+        clearCookie(res, 'refreshToken', THIRTY_DAYS);
         return res.status(200).json({message: 'Password Updated Successfully'});
     }
 ))

@@ -16,7 +16,7 @@ export default function Landing(){
     const howItWorksSection = useRef(null);
     const { data: authData, isLoading} = useAuthenticate();
     const isAuthenticated = authData?.authenticated;
-
+    console.log(authData);
 
     function showHowItWorks(){
         howItWorksSection.current ? howItWorksSection.current.scrollIntoView({behavior: 'smooth'}) : null;
@@ -37,7 +37,7 @@ export default function Landing(){
                             <div className="spinny-loader"></div> Waking Up Server
                         </div>
                         :
-                        <Link to="/home" className="fs-425 large-button bg-white text-dark-2 border-trans flex-row align-center">
+                        <Link to={isAuthenticated ? '/home' : '/login'} className="fs-425 large-button bg-white text-dark-2 border-trans flex-row align-center">
                             {isAuthenticated ? 'Go to Dashboard' : 'Get Started for Free'}
                         </Link>
                     }

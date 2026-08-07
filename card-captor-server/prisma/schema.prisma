@@ -13,14 +13,15 @@ datasource db {
 }
 
 model User{
-  id                          Int       @id @default(autoincrement())
-  username                    String    @unique
-  email                       String    @unique
-  password                    String  
-  createdAt                   DateTime  @default(now())
-  resetPasswordToken          String?
-  resetPasswordTokenAt        DateTime?
-  decks     Deck[]
+  id                                 Int       @id @default(autoincrement())
+  username                           String    @unique
+  email                              String    @unique
+  password                           String  
+  createdAt                          DateTime  @default(now())
+  resetPasswordToken                 String?   @unique
+  resetPasswordTokenExpiresAt        DateTime?
+  decks             Deck[]
+  refreshTokens     RefreshToken[]
 }
 
 model Deck{
@@ -45,4 +46,13 @@ model Flashcard{
   fsrsData  Json?
   deck      Deck      @relation(fields: [deckId], references: [id], onDelete: Cascade)
   deckId    Int
+}
+
+model RefreshToken{
+  id                Int         @id @default(autoincrement())
+  refreshToken      String      @unique
+  expiresAt         DateTime
+  createdAt         DateTime    @default(now())
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  userId            Int
 }

@@ -3,17 +3,17 @@ import { fetchData } from "../../../shared/fetchData.js";
 const base = 'auth';
 
 export async function loginRequest(payload){
-    const data = await fetchData(`${base}/login`, "POST", payload, "Authentication Failed");
+    const data = await fetchData(`${base}/login`, "POST", payload, "Authentication Failed", false);
     return data.message;
 }
 
 export async function registerRequest(payload){
-    const data = await fetchData(`${base}/register`, "POST", payload, "Authentication Failed");
+    const data = await fetchData(`${base}/register`, "POST", payload, "Authentication Failed", false);
     return data.message;
 }
 
 export async function verifyAuth(){
-    const data = await fetchData(`${base}/user`, "GET", null, "Authentication Failed");
+    const data = await fetchData(`${base}/user`, "GET", null, "Authentication Failed", false);
     return data;
 }
 
@@ -32,7 +32,11 @@ export async function forgotPassword(email){
     return data;
 }
 
-export async function resetPassword(password, token, email){
-    const data = await fetchData(`${base}/resetPassword`, "POST", {password, token, email}, "Failed to Reset Password");
+export async function resetPassword(password, token){
+    const data = await fetchData(`${base}/resetPassword`, "POST", {password, token}, "Failed to Reset Password");
     return data;
+}
+
+export async function refreshAuthToken(){
+    const data = await fetchData(`${base}/refresh`, "POST", null, "Failed to Refresh Authentication Token", false);
 }

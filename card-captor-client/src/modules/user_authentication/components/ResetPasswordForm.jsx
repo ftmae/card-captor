@@ -14,13 +14,12 @@ export default function ResetPasswordForm(){
         event.preventDefault();
         const formData = new FormData(event.target);
         const token = searchParams.get('token');
-        const email = searchParams.get('email');
         const password = formData.get('password');
         if(!validatePassword(password)){
             setValidation({password: "Password must be 12+ characters and include an uppercase, lowercase, numeric and special character"});
             return;
         }
-        resetPassword({password, email, token});
+        resetPassword({password, token});
         setValidation([]);
     }
 

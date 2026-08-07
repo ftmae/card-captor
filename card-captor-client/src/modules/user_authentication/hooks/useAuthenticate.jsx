@@ -63,7 +63,7 @@ export function useForgotPassword(){
 export function useResetPassword(){
     const navigate = useNavigate();
     return useMutation({
-        mutationFn: ({password, token, email}) => resetPassword(password, token, email),
+        mutationFn: ({password, token}) => resetPassword(password, token),
         onSuccess:  ()=> {
             toast.success('Password Reset Successfully');
             navigate('/login');
