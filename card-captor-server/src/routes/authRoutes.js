@@ -69,7 +69,7 @@ router.post('/register', asyncErrorWrapper(
             data: {
                 refreshToken: refreshTokenHash,
                 expiresAt,
-                userId: user.id,
+                userId: newUser.id,
             }
         })
 
