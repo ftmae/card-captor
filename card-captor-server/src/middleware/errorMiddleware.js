@@ -3,6 +3,7 @@ import { Prisma } from "../../generated/prisma/client.ts";
 import { InvalidFieldError, MissingFieldError } from "../custom-error-handling/ValidationError.js";
 import { RecordAlreadyExistsError, RecordNotFoundError } from "../custom-error-handling/DbError.js";
 import logger from '../logger/logger.js';
+import InvalidTokenError from "../custom-error-handling/InvalidTokenError.js";
 
 export default function errorMiddleware(err, req, res, next){
     logger.error(err);
@@ -18,6 +19,10 @@ export default function errorMiddleware(err, req, res, next){
         if(err.status === 400){
             return res.status(403).json({error: "Authorization Failure. Cannot Access AI Model"});
         }
+    }
+
+    if(err instanceof InvalidTokenError){
+        return res.status(401).json({error: err.message});
     }
 
     if(err instanceof MissingFieldError){
@@ -55,6 +60,5 @@ export default function errorMiddleware(err, req, res, next){
             return res.status(404).json({error: "Database Request Error"});
         }
     }
-    // if(err.instanceof PayloadTooLargeError)
     return res.status(500).json({error: "An Unexpected Error Occurred. Operation Failed"});
 }

@@ -9,6 +9,7 @@ import { setCookie, clearCookie } from '../utils/cookies.js';
 import {generateRandomToken, hashToken} from '../utils/generateToken.js';
 import { RecordAlreadyExistsError, RecordNotFoundError } from '../custom-error-handling/DbError.js';
 import { InvalidFieldError } from '../custom-error-handling/ValidationError.js';
+import InvalidTokenError from '../custom-error-handling/InvalidTokenError.js';
 import createJWT from '../services/jwt.js';
 import transporter from '../services/email.js';
 import dayjs from 'dayjs';
@@ -39,7 +40,7 @@ router.post('/register', asyncErrorWrapper(
             where: { username }
         });
 
-        if (userExists) throw new RecordAlreadyExistsError(`User - ${user}`);
+        if (userExists) throw new RecordAlreadyExistsError(`User - ${username}`);
 
         const emailExists = await prisma.user.findUnique({
             where: { email }
@@ -118,23 +119,31 @@ router.post('/login', asyncErrorWrapper(
 router.post('/refresh', asyncErrorWrapper(
     async (req, res) =>{
         const refreshTokenCookie = req.cookies.refreshToken;
-        if(!refreshTokenCookie) return res.status(401).json({message: "Invalid Refresh Token"});
+        if(!refreshTokenCookie) throw new InvalidTokenError('Invalid Refresh Token');
         const oldRefreshTokenHash = hashToken(refreshTokenCookie);
         const refreshTokenRecord = await prisma.refreshToken.findUnique({
             where: { refreshToken: oldRefreshTokenHash }
         });
+        if(!refreshTokenRecord) throw new InvalidTokenError('Invalid Refresh Token');
         const now = dayjs();
         const tokenExpiresAt = dayjs(refreshTokenRecord.expiresAt);
-        if(!refreshTokenRecord || now.isAfter(tokenExpiresAt)) return res.status(401).json({message: "Invalid Refresh Token"});
+        if(now.isAfter(tokenExpiresAt)) throw new InvalidTokenError('Invalid Refresh Token');
         const authToken = createJWT(refreshTokenRecord.userId);
         const {refreshToken, refreshTokenHash, expiresAt} = await createRefreshToken();
-        await prisma.refreshToken.create({
-            data: {
-                refreshToken: refreshTokenHash,
-                expiresAt,
-                userId: refreshTokenRecord.userId,
-            }
-        });
+        await prisma.$transaction([
+            prisma.refreshToken.delete({
+                where: {
+                    refreshToken: oldRefreshTokenHash
+                }
+            }),
+            prisma.refreshToken.create({
+                data: {
+                    refreshToken: refreshTokenHash,
+                    expiresAt,
+                    userId: refreshTokenRecord.userId,
+                }
+            })
+        ]);
         setCookie(res, "authToken", FIFTEEN_MINS, authToken);
         setCookie(res, "refreshToken", THIRTY_DAYS, refreshToken);
         return res.status(200).json({ message: "Reauthentication Successful" });
@@ -261,7 +270,8 @@ router.post('/forgotPassword', asyncErrorWrapper(
 router.post('/resetPassword', asyncErrorWrapper(
     async(req, res) => {
         const {password, token} = req.body; 
-    
+        const refreshToken = req.cookies.refreshToken;
+
         validateFields([
             {name: "New Password", value: password, type: 'text'},
             {name: "Token", value: token, type: 'text'},
@@ -271,18 +281,22 @@ router.post('/resetPassword', asyncErrorWrapper(
         const user = await prisma.user.findUnique({
             where: { resetPasswordToken: tokenHash }
         });
-        if(!user) return res.status(401).json({message: 'Invalid or Expired Token'});
+        if(!user) throw new InvalidTokenError('Invalid or Expired Token');
         const now = dayjs();
         const tokenExpiresAt = dayjs(user.resetPasswordTokenExpiresAt);
 
-        if(now.isAfter(tokenExpiresAt)) return res.status(403).json({message: 'Token has Expired'});
+        if(now.isAfter(tokenExpiresAt)) throw new InvalidTokenError('Token has Expired');
 
         const hashedPassword = await bcrypt.hash(password, PASSWORD_HASH);
         await prisma.user.update({
             where: { id: user.id },
             data: { password: hashedPassword, resetPasswordToken: null, resetPasswordTokenExpiresAt: null }
         });
-        
+        await prisma.refreshToken.delete({
+            where: {
+                refreshToken: hashToken(refreshToken)
+            }
+        });
         clearCookie(res, 'authToken', FIFTEEN_MINS);
         clearCookie(res, 'refreshToken', THIRTY_DAYS);
         return res.status(200).json({message: 'Password Updated Successfully'});
