@@ -1,15 +1,6 @@
-export default async function generateCards({finalText, selectedQuestionTypes, deckId}){
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/flashcards/generateCards`, {
-        credentials: 'include',
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({text: finalText, questionTypes: selectedQuestionTypes, deckId})
-    });
+import { fetchData } from "../../../shared/fetchData.js";
 
-    if(!response.ok){
-        const err = await response.json();
-        throw new Error(err.error || "API request failed");
-    };
-    const data = await response.json();
-    return data;
+export default async function generateCards({finalText, selectedQuestionTypes, deckId}){
+    const data = await fetchData('flashcards/generateCards', "POST", {text: finalText, questionTypes: selectedQuestionTypes, deckId}, "Failed To Generate Flashcards");
+    return data;   
 }

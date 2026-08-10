@@ -14,7 +14,7 @@ const steps = [
 export default function Landing(){
     const [isHowItWorks, setIsHowItWorks] = useState(false);
     const howItWorksSection = useRef(null);
-    const { data: authData, isLoading} = useAuthenticate();
+    const { data: authData, isLoading} = useAuthenticate(true);
     const isAuthenticated = authData?.authenticated;
     console.log(authData);
 

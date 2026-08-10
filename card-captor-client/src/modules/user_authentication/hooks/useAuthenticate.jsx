@@ -8,10 +8,10 @@ function onError(error){
     toast.error(error.message)
 }
 
-export function useAuthenticate(){
+export function useAuthenticate(retry){
     return useQuery({
         queryKey: ['isAuthenticated'],
-        queryFn: verifyAuth
+        queryFn: () => verifyAuth(retry)
     })
 }
 

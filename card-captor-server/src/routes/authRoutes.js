@@ -150,7 +150,7 @@ router.post('/refresh', asyncErrorWrapper(
     }
 ))
 
-router.get('/user', optionalAuthMiddleware, asyncErrorWrapper(
+router.get('/user', authMiddleware, asyncErrorWrapper(
     async (req, res) => {
         const user = await prisma.user.findUnique({
             where: {
@@ -214,7 +214,7 @@ router.put('/user', authMiddleware, asyncErrorWrapper(
     }
 ))
 
-router.post('/logout', optionalAuthMiddleware, async (req, res) => {
+router.post('/logout', authMiddleware, async (req, res) => {
     try {
         const authToken = req.cookies.authToken;
         const refreshToken = req.cookies.refreshToken;

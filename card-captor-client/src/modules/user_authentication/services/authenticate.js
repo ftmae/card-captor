@@ -12,8 +12,8 @@ export async function registerRequest(payload){
     return data.message;
 }
 
-export async function verifyAuth(){
-    const data = await fetchData(`${base}/user`, "GET", null, "Authentication Failed", false);
+export async function verifyAuth(retry=false){
+    const data = await fetchData(`${base}/user`, "GET", null, "Authentication Failed", retry);
     return data;
 }
 
@@ -39,4 +39,5 @@ export async function resetPassword(password, token){
 
 export async function refreshAuthToken(){
     const data = await fetchData(`${base}/refresh`, "POST", null, "Failed to Refresh Authentication Token", false);
+    return data;
 }

@@ -1,6 +1,7 @@
 import { verifyAuth } from '../services/authenticate.js';
 import { redirect } from 'react-router';
 import queryClient from '../../../shared/queryClient.js';
+import HttpError from '../../../shared/error-classes/HttpError.js';
 
 export async function isUserAuthenticated(){
   const user = await queryClient.fetchQuery({queryKey: ['isAuthenticated'], queryFn: verifyAuth});
@@ -22,6 +23,7 @@ export async function protectedLoader(){
     if(!user.authenticated) return redirect('/login');
     else return user;
   }catch(error){
+    if(error.status === 401 && error instanceof HttpError) return redirect('/login');
     if(!error.status || error.status >= 500) throw new Error("Server Unavailable. Please try again later.");
   }
 }

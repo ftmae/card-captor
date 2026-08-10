@@ -9,14 +9,13 @@ export async function fetchData(endpoint, method, body, errorMessage, retry=true
         headers: headers, 
         body: body && JSON.stringify(body),
     });
-    // check if response.status is 401 then referesh authentication toke
     if(!response.ok) {
         const err = await response.json();
         if(response.status === 401 && retry){
             await refreshAuthToken();
+            return fetchData(endpoint, method, body, errorMessage, false);
         }
         throw new HttpError(response.status, err.error || errorMessage);
-    
     }
     const data = await response.json();
     return data; 
