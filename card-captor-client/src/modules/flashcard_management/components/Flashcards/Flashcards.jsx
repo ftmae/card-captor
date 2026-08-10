@@ -60,7 +60,7 @@ export default function Flashcards() {
                             onConfirmDelete={onConfirmDelete}
                             onToggleSelectAll={onToggleSelectAll}
                             disabled={isQueryLoading || isAddPending || isRemovePending}
-                            deleteLabel="Delete Decks"
+                            deleteLabel="Delete Cards"
                         />
                         <IconTextButton 
                             onClick={()=> setCreate(prev=>!prev)} 

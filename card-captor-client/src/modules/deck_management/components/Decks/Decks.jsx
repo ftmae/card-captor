@@ -52,7 +52,7 @@ export default function Decks(){
                             onConfirmDelete={onConfirmDelete}
                             onToggleSelectAll={onToggleSelectAll}
                             disabled={isQueryLoading || isRemovePending}
-                            deleteLabel="Delete Cards"
+                            deleteLabel="Delete Decks"
                         />
                     </div>
                 </div>
