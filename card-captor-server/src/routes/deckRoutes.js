@@ -5,6 +5,7 @@ import asyncErrorWrapper from '../utils/asyncErrorWrapper.js';
 import validateFields from '../utils/validation.js';
 import { InvalidFieldError, MissingFieldError } from '../custom-error-handling/ValidationError.js';
 import { RecordNotFoundError } from '../custom-error-handling/DbError.js';
+import parseAndValidateIds from '../utils/parseAndValidateIds.js';
 
 const router = express.Router();
 
@@ -86,18 +87,9 @@ router.post('/editStatus', asyncErrorWrapper(
 
 router.delete('/', asyncErrorWrapper(
     async (req, res)=>{
-        let rawIds = req.query.ids;
-        if(!rawIds) throw new MissingFieldError('Deck ID');
-        if(typeof rawIds === 'string'){
-            rawIds = [rawIds];
-        }
         const userId = Number.parseInt(req.userId);
-        const parsedIds = rawIds.map(id => Number.parseInt(id));
         validateFields([{value: userId, name: "User ID", type: "id"}]);
-
-        const existingDecks = await prisma.deck.findMany({ where: {id: {in: parsedIds}, userId} });
-        if(!existingDecks) throw new RecordNotFoundError(`Decks - ${parsedIds.join(', ')}`);
-
+        const parsedIds = parseAndValidateIds(req.query.ids, "Deck ID");
         await prisma.deck.deleteMany({
             where: {
                 id: {in: parsedIds},
